@@ -1,7 +1,7 @@
 name = "DggridRunner"
 uuid = "97cb0bd6-f491-46d5-a9a7-7840aaf710c3"
 authors = ["Alexander Kmoch <alexander.kmoch@ut.ee> and contributors"]
-version = "1.0.0-DEV"
+version = "0.0.3"
 
 [compat]
 julia = "1.10.10"
