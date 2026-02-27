@@ -21,8 +21,9 @@ If you need that for other purposes, you could something like that:
 ```julia
 import DGGRID7_jll
 
-const libs_paths = DGGRID7_jll.LIBPATH_list
-const dggrid_exec = DGGRID7_jll.get_dggrid_path()
+DGGRID7_jll.dggrid() do dggrid_exec
+    run(`$dggrid_exec -h`)
+end
 ```
 
-We internally use that already, so ou are good to go
+We internally use that already, so you are good to go
