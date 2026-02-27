@@ -27,22 +27,30 @@ export grid_gen_convenience!
 import DGGRID7_jll
 import ArchGDAL
 
-const libs_paths = DGGRID7_jll.LIBPATH_list
-const dggrid_exec = DGGRID7_jll.get_dggrid_path()
+# const libs_paths = DGGRID7_jll.LIBPATH_list
+# const dggrid_exec = DGGRID7_jll.get_dggrid_path()
 
 # maybe update to make flexible between platforms, Apple/macosx, Linux, Windows
-if Sys.isapple()
-    ENV["DYLD_LIBRARY_PATH"] = join(libs_paths, ":")
-elseif Sys.islinux()
-    ENV["LD_LIBRARY_PATH"] = join(libs_paths, ":")
-elseif Sys.iswindows()
-    ENV["PATH"] = join(libs_paths, ";") * ";" * ENV["PATH"]
-end
+# if Sys.isapple()
+#     ENV["DYLD_LIBRARY_PATH"] = join(libs_paths, ":")
+# elseif Sys.islinux()
+#     ENV["LD_LIBRARY_PATH"] = join(libs_paths, ":")
+# elseif Sys.iswindows()
+#     ENV["PATH"] = join(libs_paths, ";") * ";" * ENV["PATH"]
+# end
+
+# apparently the better more Julia appropriate way is do wrap the cli tool call into a resource block:
+# DGGRID7_jll.dggrid() do dggrid_exec
+#     run(`$dggrid_exec -h`)
+# end
+# 
 
 # test version
 function dryrun()
-    lineinfo = readchomp(`$dggrid_exec -h`)
-    println("DGGRID Executable found: $lineinfo")
+    DGGRID7_jll.dggrid() do dggrid_exec
+        lineinfo = readchomp(`$dggrid_exec -h`)
+        println("DGGRID Executable found: $lineinfo")
+    end
 end
 
 # ---------------------------------------------
@@ -123,10 +131,13 @@ function run_output_stats(params::DggridParams.DGGRIDMetafile; temp_prefix::Stri
     println("Created temporary metafile at: $metafile")
 
     shell_io = PipeBuffer()
-    mycommand = `$dggrid_exec $metafile`
-    println("Running DGGRID with command: $mycommand")
+    
+    DGGRID7_jll.dggrid() do dggrid_exec
+        # mycommand = `$dggrid_exec $metafile`
+        println("Running DGGRID with command: $dggrid_exec $metafile")
+        run(`$dggrid_exec $metafile`, devnull, shell_io, stderr)
+    end
 
-    run(mycommand, devnull, shell_io, stderr)
     stats_io_out = readlines(shell_io)
     needed_lines = String[]
     skip_out = true
@@ -158,9 +169,10 @@ function run_dggrid_simple(params::DggridParams.DGGRIDMetafile; temp_prefix::Str
     println("Created temporary metafile at: $metafile")
     
     # run dggrid with metafile
-    cmd = `$dggrid_exec $metafile`
     println("Running DGGRID with command: $cmd")
-    run(cmd)
+    DGGRID7_jll.dggrid() do dggrid_exec
+        run(`$dggrid_exec $metafile`)
+    end
     
     # optionally delete metafile
     rm(metafile; force=true)

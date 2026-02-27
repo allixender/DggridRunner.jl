@@ -17,7 +17,6 @@ Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 ArchGDAL = "0.10.11"
 CoordRefSystems = "0.19.13"
 DGGRID7_jll = "1.8.42"
-GDAL_jll = "303.1100.500"
 
 GeoInterface = "1.6.0"
 GeometryBasics = "0.5.10"
