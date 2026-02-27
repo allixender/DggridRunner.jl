@@ -8,9 +8,9 @@ using Test
     @testset "Point Output" begin
         include("test_point_output.jl")
     end
-    # @testset "Runner Lib" begin
-    #     # NOTE: This test is currently disabled due to a dynamic library loading issue with DGGRID7_jll.
-    #     # It can be run locally using the test/run_with_env.sh script.
-    #     # include("test_dggrid_runner_lib.jl")
+    @testset "Runner Lib" begin
+    #   # NOTE: This test is might need to be disabled due to a dynamic library loading issue with DGGRID7_jll.
+    #   # It might be possible to run locally using the test/run_with_env.sh script.
+        include("test_dggrid_runner_lib.jl")
     # end
 end
