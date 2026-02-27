@@ -169,9 +169,10 @@ function run_dggrid_simple(params::DggridParams.DGGRIDMetafile; temp_prefix::Str
     println("Created temporary metafile at: $metafile")
     
     # run dggrid with metafile
-    println("Running DGGRID with command: $cmd")
     DGGRID7_jll.dggrid() do dggrid_exec
-        run(`$dggrid_exec $metafile`)
+        cmd = `$dggrid_exec $metafile`
+        println("Running DGGRID with command: $cmd")
+        run(cmd)
     end
     
     # optionally delete metafile

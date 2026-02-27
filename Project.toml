@@ -1,7 +1,7 @@
 name = "DggridRunner"
 uuid = "97cb0bd6-f491-46d5-a9a7-7840aaf710c3"
 authors = ["Alexander Kmoch <alexander.kmoch@ut.ee> and contributors"]
-version = "0.0.3"
+version = "0.0.4"
 
 [deps]
 ArchGDAL = "c9ce4bd3-c3d5-55b8-8973-c0e20141b8c3"
