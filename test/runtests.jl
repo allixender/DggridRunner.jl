@@ -12,5 +12,5 @@ using Test
     #   # NOTE: This test is might need to be disabled due to a dynamic library loading issue with DGGRID7_jll.
     #   # It might be possible to run locally using the test/run_with_env.sh script.
         include("test_dggrid_runner_lib.jl")
-    # end
+    end
 end
