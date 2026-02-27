@@ -3,7 +3,23 @@ uuid = "97cb0bd6-f491-46d5-a9a7-7840aaf710c3"
 authors = ["Alexander Kmoch <alexander.kmoch@ut.ee> and contributors"]
 version = "0.0.3"
 
+[deps]
+ArchGDAL = "c9ce4bd3-c3d5-55b8-8973-c0e20141b8c3"
+CoordRefSystems = "b46f11dc-f210-4604-bfba-323c1ec968cb"
+DGGRID7_jll = "56fc471b-e449-5679-a438-44d065b4fb79"
+GeoInterface = "cf35fbd7-0cd7-5166-be24-54bfbe79505f"
+GeometryBasics = "5c1252a2-5f33-56bf-86c9-59e7332b4326"
+StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
+Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
+
 [compat]
+ArchGDAL = "0.10.11"
+CoordRefSystems = "0.19.13"
+DGGRID7_jll = "1.8.42"
+GeoInterface = "1.6.0"
+GeometryBasics = "0.5.10"
+StaticArrays = "1.9.17"
+Unitful = "1.28.0"
 julia = "1.10.10"
 
 [extras]

@@ -11,45 +11,46 @@ Tests the DGGRID parameter library including:
 using Test
 
 # Include the module to test
-# include("dggrid_params.jl")
-using DGGRIDParams
+# include("DggridParams.jl")
+using DggridRunner
+using .DggridParams
 
-@testset "DGGRIDParams Tests" begin
+@testset "DggridParams Tests" begin
     
     # ========================================================================
     # Test Parameter Definitions
     # ========================================================================
     
     @testset "Parameter Definitions" begin
-        @test haskey(DGGRIDParams.PARAMETER_DEFINITIONS, "dggrid_operation")
-        @test haskey(DGGRIDParams.PARAMETER_DEFINITIONS, "dggs_type")
-        @test haskey(DGGRIDParams.PARAMETER_DEFINITIONS, "dggs_res_spec")
+        @test haskey(DggridParams.PARAMETER_DEFINITIONS, "dggrid_operation")
+        @test haskey(DggridParams.PARAMETER_DEFINITIONS, "dggs_type")
+        @test haskey(DggridParams.PARAMETER_DEFINITIONS, "dggs_res_spec")
         
         # Test operation parameter
-        op_param = DGGRIDParams.PARAMETER_DEFINITIONS["dggrid_operation"]
-        @test op_param.type == DGGRIDParams.CHOICE
+        op_param = DggridParams.PARAMETER_DEFINITIONS["dggrid_operation"]
+        @test op_param.type == DggridParams.CHOICE
         @test "GENERATE_GRID" in op_param.allowed_values
         @test "TRANSFORM_POINTS" in op_param.allowed_values
         @test "OUTPUT_STATS" in op_param.allowed_values
         
         # Test DGG type parameter
-        dgg_param = DGGRIDParams.PARAMETER_DEFINITIONS["dggs_type"]
-        @test dgg_param.type == DGGRIDParams.CHOICE
+        dgg_param = DggridParams.PARAMETER_DEFINITIONS["dggs_type"]
+        @test dgg_param.type == DggridParams.CHOICE
         @test "ISEA7H" in dgg_param.allowed_values
         @test "IGEO7" in dgg_param.allowed_values
         
         # Test address type parameters
-        @test haskey(DGGRIDParams.PARAMETER_DEFINITIONS, "input_address_type")
-        @test haskey(DGGRIDParams.PARAMETER_DEFINITIONS, "output_address_type")
-        addr_param = DGGRIDParams.PARAMETER_DEFINITIONS["output_address_type"]
+        @test haskey(DggridParams.PARAMETER_DEFINITIONS, "input_address_type")
+        @test haskey(DggridParams.PARAMETER_DEFINITIONS, "output_address_type")
+        addr_param = DggridParams.PARAMETER_DEFINITIONS["output_address_type"]
         @test "SEQNUM" in addr_param.allowed_values
         @test "Q2DI" in addr_param.allowed_values
         @test "HIERNDX" in addr_param.allowed_values
         
         # Test hierarchical index parameters
-        @test haskey(DGGRIDParams.PARAMETER_DEFINITIONS, "output_hier_ndx_system")
-        @test haskey(DGGRIDParams.PARAMETER_DEFINITIONS, "output_hier_ndx_form")
-        hier_form = DGGRIDParams.PARAMETER_DEFINITIONS["output_hier_ndx_form"]
+        @test haskey(DggridParams.PARAMETER_DEFINITIONS, "output_hier_ndx_system")
+        @test haskey(DggridParams.PARAMETER_DEFINITIONS, "output_hier_ndx_form")
+        hier_form = DggridParams.PARAMETER_DEFINITIONS["output_hier_ndx_form"]
         @test "INT64" in hier_form.allowed_values
         @test "DIGIT_STRING" in hier_form.allowed_values
     end
@@ -104,29 +105,29 @@ using DGGRIDParams
     
     @testset "Parameter Validation" begin
         # Test valid parameters
-        @test DGGRIDParams.validate_parameter("dggrid_operation", "GENERATE_GRID")[1] == true
-        @test DGGRIDParams.validate_parameter("dggs_res_spec", 9)[1] == true
-        @test DGGRIDParams.validate_parameter("precision", 7)[1] == true
-        @test DGGRIDParams.validate_parameter("verbosity", 0)[1] == true
-        @test DGGRIDParams.validate_parameter("dggs_vert0_lon", 11.25)[1] == true
-        @test DGGRIDParams.validate_parameter("clip_using_holes", true)[1] == true
+        @test DggridParams.validate_parameter("dggrid_operation", "GENERATE_GRID")[1] == true
+        @test DggridParams.validate_parameter("dggs_res_spec", 9)[1] == true
+        @test DggridParams.validate_parameter("precision", 7)[1] == true
+        @test DggridParams.validate_parameter("verbosity", 0)[1] == true
+        @test DggridParams.validate_parameter("dggs_vert0_lon", 11.25)[1] == true
+        @test DggridParams.validate_parameter("clip_using_holes", true)[1] == true
         
         # Test invalid parameter name
-        @test DGGRIDParams.validate_parameter("invalid_param", "value")[1] == false
+        @test DggridParams.validate_parameter("invalid_param", "value")[1] == false
         
         # Test invalid parameter types
-        @test DGGRIDParams.validate_parameter("dggs_res_spec", "not_an_int")[1] == false
-        @test DGGRIDParams.validate_parameter("precision", 7.5)[1] == false  # Should be integer
-        @test DGGRIDParams.validate_parameter("dggs_vert0_lon", "not_a_number")[1] == false
-        @test DGGRIDParams.validate_parameter("clip_using_holes", "not_a_bool")[1] == false
+        @test DggridParams.validate_parameter("dggs_res_spec", "not_an_int")[1] == false
+        @test DggridParams.validate_parameter("precision", 7.5)[1] == false  # Should be integer
+        @test DggridParams.validate_parameter("dggs_vert0_lon", "not_a_number")[1] == false
+        @test DggridParams.validate_parameter("clip_using_holes", "not_a_bool")[1] == false
         
         # Test invalid choice values
-        @test DGGRIDParams.validate_parameter("dggrid_operation", "INVALID_OP")[1] == false
-        @test DGGRIDParams.validate_parameter("dggs_type", "INVALID_TYPE")[1] == false
+        @test DggridParams.validate_parameter("dggrid_operation", "INVALID_OP")[1] == false
+        @test DggridParams.validate_parameter("dggs_type", "INVALID_TYPE")[1] == false
         
         # Test valid choice values (case insensitive)
-        @test DGGRIDParams.validate_parameter("dggrid_operation", "generate_grid")[1] == true
-        @test DGGRIDParams.validate_parameter("dggs_type", "isea7h")[1] == true
+        @test DggridParams.validate_parameter("dggrid_operation", "generate_grid")[1] == true
+        @test DggridParams.validate_parameter("dggs_type", "isea7h")[1] == true
     end
     
     @testset "Metafile Validation" begin
@@ -402,22 +403,22 @@ using DGGRIDParams
     
     @testset "Parameter Info Functions" begin
         # Test get_parameter_info
-        info = DGGRIDParams.get_parameter_info("dggrid_operation")
+        info = DggridParams.get_parameter_info("dggrid_operation")
         @test info !== nothing
         @test info.name == "dggrid_operation"
-        @test info.type == DGGRIDParams.CHOICE
+        @test info.type == DggridParams.CHOICE
         
         # Test non-existent parameter
-        @test DGGRIDParams.get_parameter_info("nonexistent") === nothing
+        @test DggridParams.get_parameter_info("nonexistent") === nothing
         
         # Test list_parameters
-        all_params = DGGRIDParams.list_parameters()
+        all_params = DggridParams.list_parameters()
         @test length(all_params) > 0
         @test "dggrid_operation" in all_params
         @test "dggs_type" in all_params
         
         # Test filtered list
-        gen_params = DGGRIDParams.list_parameters(operation="GENERATE_GRID")
+        gen_params = DggridParams.list_parameters(operation="GENERATE_GRID")
         @test length(gen_params) > 0
         @test "clip_subset_type" in gen_params
     end

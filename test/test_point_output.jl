@@ -8,7 +8,7 @@ using Test
 
 # Include the module to test
 # include("dggrid_runner_lib.jl")
-using DGGRIDRunnerLib
+using DggridRunner
 
 @testset "Point Output Parameter Tests" begin
     
@@ -27,17 +27,17 @@ using DGGRIDRunnerLib
         )
         
         @test success == true
-        @test typeof(params) == DGGRIDParams.DGGRIDMetafile
+        @test typeof(params) == DggridParams.DGGRIDMetafile
         
         # Check that cell output is configured
-        @test DGGRIDParams.get_parameter(params, "cell_output_type") == "GDAL"
-        @test DGGRIDParams.get_parameter(params, "cell_output_gdal_format") == "GPKG"
-        @test DGGRIDParams.get_parameter(params, "cell_output_file_name") !== nothing
+        @test DggridParams.get_parameter(params, "cell_output_type") == "GDAL"
+        @test DggridParams.get_parameter(params, "cell_output_gdal_format") == "GPKG"
+        @test DggridParams.get_parameter(params, "cell_output_file_name") !== nothing
         
         # Check that point output is disabled
-        @test DGGRIDParams.get_parameter(params, "point_output_type") == "NONE"
-        @test DGGRIDParams.get_parameter(params, "point_output_gdal_format") === nothing
-        @test DGGRIDParams.get_parameter(params, "point_output_file_name") === nothing
+        @test DggridParams.get_parameter(params, "point_output_type") == "NONE"
+        @test DggridParams.get_parameter(params, "point_output_gdal_format") === nothing
+        @test DggridParams.get_parameter(params, "point_output_file_name") === nothing
     end
     
     @testset "prep_generate_grid_whole_earth - point output (point_output=true)" begin
@@ -51,17 +51,17 @@ using DGGRIDRunnerLib
         )
         
         @test success == true
-        @test typeof(params) == DGGRIDParams.DGGRIDMetafile
+        @test typeof(params) == DggridParams.DGGRIDMetafile
         
         # Check that point output is configured
-        @test DGGRIDParams.get_parameter(params, "point_output_type") == "GDAL"
-        @test DGGRIDParams.get_parameter(params, "point_output_gdal_format") == "GPKG"
-        @test DGGRIDParams.get_parameter(params, "point_output_file_name") !== nothing
+        @test DggridParams.get_parameter(params, "point_output_type") == "GDAL"
+        @test DggridParams.get_parameter(params, "point_output_gdal_format") == "GPKG"
+        @test DggridParams.get_parameter(params, "point_output_file_name") !== nothing
         
         # Check that cell output is disabled
-        @test DGGRIDParams.get_parameter(params, "cell_output_type") == "NONE"
-        @test DGGRIDParams.get_parameter(params, "cell_output_gdal_format") === nothing
-        @test DGGRIDParams.get_parameter(params, "cell_output_file_name") === nothing
+        @test DggridParams.get_parameter(params, "cell_output_type") == "NONE"
+        @test DggridParams.get_parameter(params, "cell_output_gdal_format") === nothing
+        @test DggridParams.get_parameter(params, "cell_output_file_name") === nothing
     end
     
     @testset "prep_generate_grid_whole_earth - different formats with point_output" begin
@@ -75,8 +75,8 @@ using DGGRIDRunnerLib
                 point_output=false
             )
             @test success_cell == true
-            @test DGGRIDParams.get_parameter(params_cell, "cell_output_gdal_format") == format
-            @test DGGRIDParams.get_parameter(params_cell, "point_output_type") == "NONE"
+            @test DggridParams.get_parameter(params_cell, "cell_output_gdal_format") == format
+            @test DggridParams.get_parameter(params_cell, "point_output_type") == "NONE"
             
             # Test with point output
             success_point, params_point, _ = prep_generate_grid_whole_earth(
@@ -85,8 +85,8 @@ using DGGRIDRunnerLib
                 point_output=true
             )
             @test success_point == true
-            @test DGGRIDParams.get_parameter(params_point, "point_output_gdal_format") == format
-            @test DGGRIDParams.get_parameter(params_point, "cell_output_type") == "NONE"
+            @test DggridParams.get_parameter(params_point, "point_output_gdal_format") == format
+            @test DggridParams.get_parameter(params_point, "cell_output_type") == "NONE"
         end
     end
     
@@ -107,15 +107,15 @@ using DGGRIDRunnerLib
         )
         
         @test success == true
-        @test typeof(params) == DGGRIDParams.DGGRIDMetafile
+        @test typeof(params) == DggridParams.DGGRIDMetafile
         
         # Check that cell output is configured
-        @test DGGRIDParams.get_parameter(params, "cell_output_type") == "GDAL"
-        @test DGGRIDParams.get_parameter(params, "cell_output_gdal_format") == "GPKG"
-        @test DGGRIDParams.get_parameter(params, "cell_output_file_name") !== nothing
+        @test DggridParams.get_parameter(params, "cell_output_type") == "GDAL"
+        @test DggridParams.get_parameter(params, "cell_output_gdal_format") == "GPKG"
+        @test DggridParams.get_parameter(params, "cell_output_file_name") !== nothing
         
         # Check that point output is disabled
-        @test DGGRIDParams.get_parameter(params, "point_output_type") == "NONE"
+        @test DggridParams.get_parameter(params, "point_output_type") == "NONE"
     end
     
     @testset "prep_generate_grid_coarse_cells - point output (point_output=true)" begin
@@ -131,15 +131,15 @@ using DGGRIDRunnerLib
         )
         
         @test success == true
-        @test typeof(params) == DGGRIDParams.DGGRIDMetafile
+        @test typeof(params) == DggridParams.DGGRIDMetafile
         
         # Check that point output is configured
-        @test DGGRIDParams.get_parameter(params, "point_output_type") == "GDAL"
-        @test DGGRIDParams.get_parameter(params, "point_output_gdal_format") == "FlatGeobuf"
-        @test DGGRIDParams.get_parameter(params, "point_output_file_name") !== nothing
+        @test DggridParams.get_parameter(params, "point_output_type") == "GDAL"
+        @test DggridParams.get_parameter(params, "point_output_gdal_format") == "FlatGeobuf"
+        @test DggridParams.get_parameter(params, "point_output_file_name") !== nothing
         
         # Check that cell output is disabled
-        @test DGGRIDParams.get_parameter(params, "cell_output_type") == "NONE"
+        @test DggridParams.get_parameter(params, "cell_output_type") == "NONE"
     end
     
     @testset "prep_generate_grid_coarse_cells - HIERNDX with point_output" begin
@@ -155,8 +155,8 @@ using DGGRIDRunnerLib
             point_output=false
         )
         @test success_cell == true
-        @test DGGRIDParams.get_parameter(params_cell, "cell_output_type") == "GDAL"
-        @test DGGRIDParams.get_parameter(params_cell, "point_output_type") == "NONE"
+        @test DggridParams.get_parameter(params_cell, "cell_output_type") == "GDAL"
+        @test DggridParams.get_parameter(params_cell, "point_output_type") == "NONE"
         
         # Test with point output
         success_point, params_point, _ = prep_generate_grid_coarse_cells(
@@ -165,8 +165,8 @@ using DGGRIDRunnerLib
             point_output=true
         )
         @test success_point == true
-        @test DGGRIDParams.get_parameter(params_point, "point_output_type") == "GDAL"
-        @test DGGRIDParams.get_parameter(params_point, "cell_output_type") == "NONE"
+        @test DggridParams.get_parameter(params_point, "point_output_type") == "GDAL"
+        @test DggridParams.get_parameter(params_point, "cell_output_type") == "NONE"
     end
     
     # ========================================================================
@@ -202,9 +202,9 @@ using DGGRIDRunnerLib
             )
             
             @test success_cell == true
-            @test DGGRIDParams.get_parameter(params_cell, "cell_output_type") == "GDAL"
-            @test DGGRIDParams.get_parameter(params_cell, "cell_output_gdal_format") == "GPKG"
-            @test DGGRIDParams.get_parameter(params_cell, "point_output_type") == "NONE"
+            @test DggridParams.get_parameter(params_cell, "cell_output_type") == "GDAL"
+            @test DggridParams.get_parameter(params_cell, "cell_output_gdal_format") == "GPKG"
+            @test DggridParams.get_parameter(params_cell, "point_output_type") == "NONE"
             
             # Test with point output
             success_point, params_point, output_path_point = prep_generate_grid_clip_region(
@@ -214,9 +214,9 @@ using DGGRIDRunnerLib
             )
             
             @test success_point == true
-            @test DGGRIDParams.get_parameter(params_point, "point_output_type") == "GDAL"
-            @test DGGRIDParams.get_parameter(params_point, "point_output_gdal_format") == "GeoJSON"
-            @test DGGRIDParams.get_parameter(params_point, "cell_output_type") == "NONE"
+            @test DggridParams.get_parameter(params_point, "point_output_type") == "GDAL"
+            @test DggridParams.get_parameter(params_point, "point_output_gdal_format") == "GeoJSON"
+            @test DggridParams.get_parameter(params_point, "cell_output_type") == "NONE"
             
         finally
             # Clean up test file
@@ -249,9 +249,9 @@ using DGGRIDRunnerLib
             )
             
             @test success == true
-            @test DGGRIDParams.get_parameter(params, "geodetic_densify") == 1.0
-            @test DGGRIDParams.get_parameter(params, "point_output_type") == "GDAL"
-            @test DGGRIDParams.get_parameter(params, "cell_output_type") == "NONE"
+            @test DggridParams.get_parameter(params, "geodetic_densify") == 1.0
+            @test DggridParams.get_parameter(params, "point_output_type") == "GDAL"
+            @test DggridParams.get_parameter(params, "cell_output_type") == "NONE"
             
         finally
             rm(test_clip_file; force=true)
@@ -268,16 +268,16 @@ using DGGRIDRunnerLib
         # Test whole_earth
         success1, params1, _ = prep_generate_grid_whole_earth("ISEA7H", 3)
         @test success1 == true
-        @test DGGRIDParams.get_parameter(params1, "cell_output_type") == "GDAL"
-        @test DGGRIDParams.get_parameter(params1, "point_output_type") == "NONE"
+        @test DggridParams.get_parameter(params1, "cell_output_type") == "GDAL"
+        @test DggridParams.get_parameter(params1, "point_output_type") == "NONE"
         
         # Test coarse_cells
         success2, params2, _ = prep_generate_grid_coarse_cells(
             "ISEA7H", 5, 2, string.([1, 2])
         )
         @test success2 == true
-        @test DGGRIDParams.get_parameter(params2, "cell_output_type") == "GDAL"
-        @test DGGRIDParams.get_parameter(params2, "point_output_type") == "NONE"
+        @test DggridParams.get_parameter(params2, "cell_output_type") == "GDAL"
+        @test DggridParams.get_parameter(params2, "point_output_type") == "NONE"
         
         # Test clip_region
         test_clip_file = tempname() * ".geojson"
@@ -300,8 +300,8 @@ using DGGRIDRunnerLib
                 "ISEA7H", 4, test_clip_file
             )
             @test success3 == true
-            @test DGGRIDParams.get_parameter(params3, "cell_output_type") == "GDAL"
-            @test DGGRIDParams.get_parameter(params3, "point_output_type") == "NONE"
+            @test DggridParams.get_parameter(params3, "cell_output_type") == "GDAL"
+            @test DggridParams.get_parameter(params3, "point_output_type") == "NONE"
         finally
             rm(test_clip_file; force=true)
         end

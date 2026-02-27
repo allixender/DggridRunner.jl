@@ -1,0 +1,42 @@
+dggrid_operation GENERATE_GRID
+dggs_type IGEO7
+dggs_vert0_lon 11.2
+dggs_vert0_lat 58.2825
+dggs_res_spec 3
+# precision 7 (user set)
+
+input_address_type HIERNDX
+input_hier_ndx_system Z7
+# input_hier_ndx_form int64
+input_hier_ndx_form digit_string
+
+output_address_type HIERNDX
+output_hier_ndx_system Z7
+# output_hier_ndx_form int64
+output_hier_ndx_form digit_string
+
+# densification 0 (default)
+# unwrap_points true (default)
+longitude_wrap_mode UNWRAP_EAST
+# geodetic_densify 0 (default)
+
+output_cell_label_type OUTPUT_ADDRESS_TYPE
+cell_output_type SHAPEFILE
+cell_output_file_name /tmp/cells_IGEO7_out_l3_2c39d474
+
+# point_output_type SHAPEFILE
+point_output_type NONE
+# point_output_file_name /Users/akmoch/dev/build/julia_dev/igeo7_1234_grids/points_IGEO7_out_2c39d474
+shapefile_id_field_length 22
+
+clip_subset_type WHOLE_EARTH
+# clip_subset_type SHAPEFILE
+# clip_region_files /Users/akmoch/dev/build/julia_dev/igeo7_1234_grids/clip_XQ2434.shp
+
+
+# clip_subset_type COARSE_CELLS
+# must be larger zero, and smaller than dggs_res_spec
+# clip_cell_res 1
+# clip_cell_addresses 000
+# clip_cell_densification 1 (default)
+# clipper_scale_factor 1000000 (default)
