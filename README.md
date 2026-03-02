@@ -9,8 +9,12 @@ A Julia wrapper library to run highlevel functions of the DGGRID cli tool
 - [DGGRID Version 8.43 on GitHub](https://github.com/sahrk/DGGRID)
 - [DGGRID User Manual](https://github.com/sahrk/DGGRID/blob/master/dggridManualV841.pdf)
 
-[![Population Gridded](day-04-hexa.png)](https://twitter.com/allixender/status/1324055326111485959)
+[![Population Gridded](docs/src/day-04-hexa.png)](https://twitter.com/allixender/status/1324055326111485959)
 
+
+## Inspiration
+
+There is a very similar Python package with a longer history: [dggrid4py](https://github.com/allixender/dggrid4py). That package tries to abstract away the DGGRID parameters in order to give users an easier API. This [DggridRunner](https://github.com/allixender/DggridRunner.jl) Julia package goes down a different road and rather gives an easy access to better use the specific paramters for more fine-grained DGGRID usage.
 
 ## Notes
 
