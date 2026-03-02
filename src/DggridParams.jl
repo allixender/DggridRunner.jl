@@ -946,7 +946,13 @@ function list_parameters(; operation::Union{Nothing,String}=nothing)
     return params
 end
 
-# read metafile function that takes a filepath and returns a DGGRIDMetafile
+"""
+    read_metafile(filepath::String) -> DGGRIDMetafile
+
+Read a DGGRID metafile from disk and return a populated [`DGGRIDMetafile`](@ref).
+
+Parses `key value` lines (one per row), skipping blank lines and `#` comments.
+"""
 function read_metafile(filepath::String)
     metafile = DGGRIDMetafile()
     open(filepath, "r") do io

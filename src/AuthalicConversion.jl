@@ -13,6 +13,15 @@ using Unitful
 using StaticArrays
 
 # --- Forward: Authalic -> WGS84 ---
+"""
+    AuthalicToWGS84
+
+Callable struct that converts a point from authalic (equal-area sphere)
+latitude/longitude to WGS84 geodetic latitude/longitude.
+
+Call it with an `SVector{2,Float64}` of `(lon, lat)` in degrees;
+returns an `SVector{2,Float64}` of WGS84 `(lon, lat)` in degrees.
+"""
 struct AuthalicToWGS84 end
 
 function (::AuthalicToWGS84)(p)
@@ -33,6 +42,15 @@ function (::AuthalicToWGS84)(p)
 end
 
 # --- Inverse: WGS84 -> Authalic ---
+"""
+    WGS84ToAuthalic
+
+Callable struct that converts a point from WGS84 geodetic latitude/longitude
+to authalic (equal-area sphere) latitude/longitude.
+
+Call it with an `SVector{2,Float64}` of `(lon, lat)` in degrees;
+returns an `SVector{2,Float64}` of authalic `(lon, lat)` in degrees.
+"""
 struct WGS84ToAuthalic end
 
 function (::WGS84ToAuthalic)(p)
@@ -106,6 +124,12 @@ function transform_and_unwrap(f, poly)
 end
 
 
+"""
+    transform_and_unwrap_point(f, point) -> ArchGDAL.IGeometry{wkbPoint}
+
+Apply point-transform `f` to a single GeoInterface point, wrap the resulting
+longitude into [-180, 180], and return an ArchGDAL point geometry.
+"""
 function transform_and_unwrap_point(f, point)
     sv = f(SVector(GI.x(point), GI.y(point)))
 

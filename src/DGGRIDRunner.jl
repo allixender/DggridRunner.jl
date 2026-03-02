@@ -57,6 +57,14 @@ end
 # output_stats operation functions
 # ---------------------------------------------
 
+"""
+    prep_output_stats(dggs_type::String, resolution::Int) -> (Bool, DGGRIDParams.DGGRIDMetafile)
+
+Prepare a DGGRID metafile for the `OUTPUT_STATS` operation.
+
+Returns `(success, params)` where `success` indicates validation status and
+`params` holds the configured metafile ready for [`run_output_stats`](@ref).
+"""
 function prep_output_stats(dggs_type::String, resolution::Int)
     # grid stats table
     # dggrid_operation OUTPUT_STATS
@@ -81,6 +89,13 @@ function prep_output_stats(dggs_type::String, resolution::Int)
     return (true, params)
 end
 
+"""
+    parse_output_stats(lines::Vector{<:AbstractString}) -> Dict{Int, NamedTuple}
+
+Parse the text output of a DGGRID `OUTPUT_STATS` run into a dictionary keyed by resolution.
+
+Each value is a `NamedTuple` with fields `num_cells`, `area_km2`, `area_m2`, `cls_km`, `cls_m`.
+"""
 function parse_output_stats(lines::Vector{<:AbstractString})
     # Skip header line (Julia is 1-based array index)
     data_lines = lines[4:end]
@@ -118,6 +133,15 @@ function parse_output_stats(lines::Vector{<:AbstractString})
     return stats
 end
 
+"""
+    run_output_stats(params::DGGRIDParams.DGGRIDMetafile; temp_prefix::String = "") -> Dict{Int, NamedTuple}
+
+Execute DGGRID with the given `OUTPUT_STATS` metafile and return parsed statistics.
+
+Writes a temporary metafile, runs the DGGRID binary, captures stdout, and calls
+[`parse_output_stats`](@ref) on the result. Pass `temp_prefix` to control the
+directory used for the temporary file.
+"""
 function run_output_stats(params::DGGRIDParams.DGGRIDMetafile; temp_prefix::String = "")
     # PipeBuffer is a type of IOBuffer
     # create temporary metafile
@@ -156,7 +180,15 @@ function run_output_stats(params::DGGRIDParams.DGGRIDMetafile; temp_prefix::Stri
     return stats
 end
 
-# optionally provide prefix for temporary files as paramter
+"""
+    run_dggrid_simple(params::DGGRIDParams.DGGRIDMetafile; temp_prefix::String = "")
+
+Execute DGGRID with the given metafile parameters.
+
+Writes `params` to a temporary metafile, invokes the DGGRID binary via `DGGRID7_jll`,
+then deletes the temporary file. Output files are written to the paths already set
+inside `params`. Pass `temp_prefix` to control the directory used for the temporary file.
+"""
 function run_dggrid_simple(params::DGGRIDParams.DGGRIDMetafile; temp_prefix::String = "")
     # create temporary metafile
     metafile = if temp_prefix == ""
@@ -844,6 +876,18 @@ function prep_generate_grid_clip_cells( dggs_type::String,
 end
 
 
+"""
+    grid_gen_convenience!(params::DGGRIDParams.DGGRIDMetafile;
+                          longitude_wrap_mode::String = "UNWRAP_EAST",
+                          dggs_vert0_lon = 11.2) -> Bool
+
+Apply common convenience parameters to a `GENERATE_GRID` metafile in-place.
+
+Sets the vertex-0 longitude/latitude for ISEA/IGEO projections, configures
+`longitude_wrap_mode`, adds `output_hier_ndx_form = "digit_string"` for `HIERNDX`
+address types, and adjusts Shapefile field lengths when needed.
+Returns `true` if the updated metafile passes validation, `false` otherwise.
+"""
 function grid_gen_convenience!(params::DGGRIDParams.DGGRIDMetafile; longitude_wrap_mode="UNWRAP_EAST", dggs_vert0_lon=11.2)
     # 
     # if dggs_type IGEO7 or ISEA7H and HIERNDX address type, switch to digit_string
