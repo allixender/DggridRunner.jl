@@ -1,4 +1,4 @@
-name = "DggridRunner"
+name = "DGGRIDRunner"
 uuid = "97cb0bd6-f491-46d5-a9a7-7840aaf710c3"
 authors = ["Alexander Kmoch <alexander.kmoch@ut.ee> and contributors"]
 version = "0.0.5"

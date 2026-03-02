@@ -25,7 +25,7 @@ using DGGRIDRunner
             resolution = 20
             is_ok = prep_output_stats(dggs_type, resolution)
             @test is_ok[1] == true
-            @test typeof(is_ok[2]) == DggridParams.DGGRIDMetafile
+            @test typeof(is_ok[2]) == DGGRIDParams.DGGRIDMetafile
 
             shell_out = """Earth Radius: 6,371.0071809
 
@@ -84,15 +84,15 @@ Res                 # Cells        Area (km^2)      CLS (km)
             )
             
             @test success == true
-            @test typeof(params) == DggridParams.DGGRIDMetafile
+            @test typeof(params) == DGGRIDParams.DGGRIDMetafile
             @test endswith(output_path, ".gpkg")
-            @test DggridParams.get_parameter(params, "dggrid_operation") == "GENERATE_GRID"
-            @test DggridParams.get_parameter(params, "dggs_type") == dggs_type
-            @test DggridParams.get_parameter(params, "dggs_res_spec") == resolution
-            @test DggridParams.get_parameter(params, "clip_subset_type") == "WHOLE_EARTH"
-            @test DggridParams.get_parameter(params, "cell_output_type") == "GDAL"
-            @test DggridParams.get_parameter(params, "cell_output_gdal_format") == "GPKG"
-            @test DggridParams.get_parameter(params, "point_output_type") == "NONE"
+            @test DGGRIDParams.get_parameter(params, "dggrid_operation") == "GENERATE_GRID"
+            @test DGGRIDParams.get_parameter(params, "dggs_type") == dggs_type
+            @test DGGRIDParams.get_parameter(params, "dggs_res_spec") == resolution
+            @test DGGRIDParams.get_parameter(params, "clip_subset_type") == "WHOLE_EARTH"
+            @test DGGRIDParams.get_parameter(params, "cell_output_type") == "GDAL"
+            @test DGGRIDParams.get_parameter(params, "cell_output_gdal_format") == "GPKG"
+            @test DGGRIDParams.get_parameter(params, "point_output_type") == "NONE"
             
             # Test with HIERNDX address type
             success2, params2, output_path2 = prep_generate_grid_whole_earth(
@@ -103,9 +103,9 @@ Res                 # Cells        Area (km^2)      CLS (km)
             
             @test success2 == true
             @test endswith(output_path2, ".fgb")
-            @test DggridParams.get_parameter(params2, "output_cell_label_type") == "OUTPUT_ADDRESS_TYPE"
-            @test DggridParams.get_parameter(params2, "output_address_type") == "HIERNDX"
-            @test DggridParams.get_parameter(params2, "output_hier_ndx_system") == "Z7"
+            @test DGGRIDParams.get_parameter(params2, "output_cell_label_type") == "OUTPUT_ADDRESS_TYPE"
+            @test DGGRIDParams.get_parameter(params2, "output_address_type") == "HIERNDX"
+            @test DGGRIDParams.get_parameter(params2, "output_hier_ndx_system") == "Z7"
             
             # Test with densification
             success3, params3, output_path3 = prep_generate_grid_whole_earth(
@@ -114,7 +114,7 @@ Res                 # Cells        Area (km^2)      CLS (km)
             )
             
             @test success3 == true
-            @test DggridParams.get_parameter(params3, "densification") == 2
+            @test DGGRIDParams.get_parameter(params3, "densification") == 2
         end
         
         @testset "prep_generate_grid_coarse_cells" begin
@@ -130,13 +130,13 @@ Res                 # Cells        Area (km^2)      CLS (km)
             )
             
             @test success == true
-            @test typeof(params) == DggridParams.DGGRIDMetafile
+            @test typeof(params) == DGGRIDParams.DGGRIDMetafile
             @test endswith(output_path, ".gpkg")
-            @test DggridParams.get_parameter(params, "dggrid_operation") == "GENERATE_GRID"
-            @test DggridParams.get_parameter(params, "clip_subset_type") == "COARSE_CELLS"
-            @test DggridParams.get_parameter(params, "clip_cell_res") == coarse_res
-            @test DggridParams.get_parameter(params, "clip_cell_seqnums") == "1 2 3"
-            @test DggridParams.get_parameter(params, "clip_cell_densification") == 1
+            @test DGGRIDParams.get_parameter(params, "dggrid_operation") == "GENERATE_GRID"
+            @test DGGRIDParams.get_parameter(params, "clip_subset_type") == "COARSE_CELLS"
+            @test DGGRIDParams.get_parameter(params, "clip_cell_res") == coarse_res
+            @test DGGRIDParams.get_parameter(params, "clip_cell_seqnums") == "1 2 3"
+            @test DGGRIDParams.get_parameter(params, "clip_cell_densification") == 1
             
             # Test validation: coarse_res must be < resolution
             success_fail, _, _ = prep_generate_grid_coarse_cells(
@@ -166,16 +166,16 @@ Res                 # Cells        Area (km^2)      CLS (km)
                 clip_densification=3
             )
             @test success2 == true
-            @test DggridParams.get_parameter(params2, "output_hier_ndx_system") == "Z3"
-            @test DggridParams.get_parameter(params2, "clip_cell_densification") == 3
+            @test DGGRIDParams.get_parameter(params2, "output_hier_ndx_system") == "Z3"
+            @test DGGRIDParams.get_parameter(params2, "clip_cell_densification") == 3
             
             # Apply convenience function
             success2 = grid_gen_convenience!(params2)
             @test success2 == true
             
             # Check that convenience parameters were added
-            @test DggridParams.get_parameter(params2, "output_hier_ndx_form") == "digit_string"
-            @test DggridParams.get_parameter(params2, "input_hier_ndx_form") == "digit_string"
+            @test DGGRIDParams.get_parameter(params2, "output_hier_ndx_form") == "digit_string"
+            @test DGGRIDParams.get_parameter(params2, "input_hier_ndx_form") == "digit_string"
         end
 
         @testset "prep_generate_grid_coarse_cells with IGEO7" begin
@@ -195,14 +195,14 @@ Res                 # Cells        Area (km^2)      CLS (km)
             )
             
             @test success == true
-            @test typeof(params) == DggridParams.DGGRIDMetafile
+            @test typeof(params) == DGGRIDParams.DGGRIDMetafile
             @test endswith(output_path, ".gpkg")
-            @test DggridParams.get_parameter(params, "dggrid_operation") == "GENERATE_GRID"
-            @test DggridParams.get_parameter(params, "clip_subset_type") == "COARSE_CELLS"
-            @test DggridParams.get_parameter(params, "clip_cell_res") == coarse_res
-            @test DggridParams.get_parameter(params, "clip_cell_seqnums") == nothing
-            @test DggridParams.get_parameter(params, "clip_cell_addresses") == "0012 0013 0014"
-            @test DggridParams.get_parameter(params, "clip_cell_densification") == 1
+            @test DGGRIDParams.get_parameter(params, "dggrid_operation") == "GENERATE_GRID"
+            @test DGGRIDParams.get_parameter(params, "clip_subset_type") == "COARSE_CELLS"
+            @test DGGRIDParams.get_parameter(params, "clip_cell_res") == coarse_res
+            @test DGGRIDParams.get_parameter(params, "clip_cell_seqnums") == nothing
+            @test DGGRIDParams.get_parameter(params, "clip_cell_addresses") == "0012 0013 0014"
+            @test DGGRIDParams.get_parameter(params, "clip_cell_densification") == 1
             
             # Test validation: coarse_res must be < resolution
             success_fail, _, _ = prep_generate_grid_coarse_cells(
@@ -229,7 +229,7 @@ Res                 # Cells        Area (km^2)      CLS (km)
             )
             
             @test success2 == true
-            @test DggridParams.get_parameter(params2, "clip_cell_densification") == 3
+            @test DGGRIDParams.get_parameter(params2, "clip_cell_densification") == 3
         end
         
         @testset "prep_generate_grid_clip_region" begin
@@ -259,11 +259,11 @@ Res                 # Cells        Area (km^2)      CLS (km)
                 )
                 
                 @test success == true
-                @test typeof(params) == DggridParams.DGGRIDMetafile
+                @test typeof(params) == DGGRIDParams.DGGRIDMetafile
                 @test endswith(output_path, ".gpkg")
-                @test DggridParams.get_parameter(params, "dggrid_operation") == "GENERATE_GRID"
-                @test DggridParams.get_parameter(params, "clip_subset_type") == "GDAL"
-                @test DggridParams.get_parameter(params, "clip_region_files") == test_clip_file
+                @test DGGRIDParams.get_parameter(params, "dggrid_operation") == "GENERATE_GRID"
+                @test DGGRIDParams.get_parameter(params, "clip_subset_type") == "GDAL"
+                @test DGGRIDParams.get_parameter(params, "clip_region_files") == test_clip_file
                 
                 # Test with geodetic densification
                 success2, params2, _ = prep_generate_grid_clip_region(
@@ -272,7 +272,7 @@ Res                 # Cells        Area (km^2)      CLS (km)
                 )
                 
                 @test success2 == true
-                @test DggridParams.get_parameter(params2, "geodetic_densify") == 1.0
+                @test DGGRIDParams.get_parameter(params2, "geodetic_densify") == 1.0
                 
                 # Test with holes enabled
                 success3, params3, _ = prep_generate_grid_clip_region(
@@ -281,7 +281,7 @@ Res                 # Cells        Area (km^2)      CLS (km)
                 )
                 
                 @test success3 == true
-                @test DggridParams.get_parameter(params3, "clip_using_holes") == true
+                @test DGGRIDParams.get_parameter(params3, "clip_using_holes") == true
                 
                 success4, params4, _ = prep_generate_grid_clip_region(
                     "ISEA3H",
@@ -294,9 +294,9 @@ Res                 # Cells        Area (km^2)      CLS (km)
                 # convenience function should be applied
                 success5 = grid_gen_convenience!(params4)
                 @test success5 == true
-                @test DggridParams.get_parameter(params4, "output_hier_ndx_form") == "digit_string"
-                @test DggridParams.get_parameter(params4, "output_hier_ndx_system") == "Z3"
-                @test DggridParams.get_parameter(params4, "densification") == 2
+                @test DGGRIDParams.get_parameter(params4, "output_hier_ndx_form") == "digit_string"
+                @test DGGRIDParams.get_parameter(params4, "output_hier_ndx_system") == "Z3"
+                @test DGGRIDParams.get_parameter(params4, "densification") == 2
                 
             finally
                 # Clean up test file
@@ -334,10 +334,10 @@ Res                 # Cells        Area (km^2)      CLS (km)
             @test success == true
             
             # Check that convenience parameters were added
-            @test DggridParams.get_parameter(params, "output_hier_ndx_form") == "digit_string"
-            @test DggridParams.get_parameter(params, "dggs_vert0_lon") == 11.2
-            @test DggridParams.get_parameter(params, "dggs_vert0_lat") == 58.2825
-            @test DggridParams.get_parameter(params, "longitude_wrap_mode") == "UNWRAP_EAST"
+            @test DGGRIDParams.get_parameter(params, "output_hier_ndx_form") == "digit_string"
+            @test DGGRIDParams.get_parameter(params, "dggs_vert0_lon") == 11.2
+            @test DGGRIDParams.get_parameter(params, "dggs_vert0_lat") == 58.2825
+            @test DGGRIDParams.get_parameter(params, "longitude_wrap_mode") == "UNWRAP_EAST"
         end
         
         @testset "HIERNDX address type with IGEO7" begin
@@ -353,10 +353,10 @@ Res                 # Cells        Area (km^2)      CLS (km)
             grid_gen_convenience!(params)
             
             # Check that convenience parameters were added
-            @test DggridParams.get_parameter(params, "output_hier_ndx_form") == "digit_string"
-            @test DggridParams.get_parameter(params, "dggs_vert0_lon") == 11.2
-            @test DggridParams.get_parameter(params, "dggs_vert0_lat") == 58.2825
-            @test DggridParams.get_parameter(params, "longitude_wrap_mode") == "UNWRAP_EAST"
+            @test DGGRIDParams.get_parameter(params, "output_hier_ndx_form") == "digit_string"
+            @test DGGRIDParams.get_parameter(params, "dggs_vert0_lon") == 11.2
+            @test DGGRIDParams.get_parameter(params, "dggs_vert0_lat") == 58.2825
+            @test DGGRIDParams.get_parameter(params, "longitude_wrap_mode") == "UNWRAP_EAST"
         end
         
         @testset "HIERNDX address type with ISEA3H" begin
@@ -367,17 +367,17 @@ Res                 # Cells        Area (km^2)      CLS (km)
             )
             @test success == true
 
-            @test DggridParams.get_parameter(params, "output_hier_ndx_system") == "Z3"
+            @test DGGRIDParams.get_parameter(params, "output_hier_ndx_system") == "Z3"
             
             # Apply convenience function
             success = grid_gen_convenience!(params)
             @test success == true
             
             # Check that convenience parameters were added
-            @test DggridParams.get_parameter(params, "output_hier_ndx_form") == "digit_string"
-            @test DggridParams.get_parameter(params, "dggs_vert0_lon") == 11.2
-            @test DggridParams.get_parameter(params, "dggs_vert0_lat") == 58.2825
-            @test DggridParams.get_parameter(params, "longitude_wrap_mode") == "UNWRAP_EAST"
+            @test DGGRIDParams.get_parameter(params, "output_hier_ndx_form") == "digit_string"
+            @test DGGRIDParams.get_parameter(params, "dggs_vert0_lon") == 11.2
+            @test DGGRIDParams.get_parameter(params, "dggs_vert0_lat") == 58.2825
+            @test DGGRIDParams.get_parameter(params, "longitude_wrap_mode") == "UNWRAP_EAST"
         end
         
         @testset "Non-HIERNDX address type (SEQNUM)" begin
@@ -393,26 +393,26 @@ Res                 # Cells        Area (km^2)      CLS (km)
             grid_gen_convenience!(params)
             
             # Check that HIERNDX-specific parameters were NOT added
-            @test DggridParams.get_parameter(params, "output_hier_ndx_form") === nothing
-            @test DggridParams.get_parameter(params, "dggs_vert0_lon") == 11.2
-            @test DggridParams.get_parameter(params, "dggs_vert0_lat") == 58.2825
-            @test DggridParams.get_parameter(params, "longitude_wrap_mode") == "UNWRAP_EAST"
+            @test DGGRIDParams.get_parameter(params, "output_hier_ndx_form") === nothing
+            @test DGGRIDParams.get_parameter(params, "dggs_vert0_lon") == 11.2
+            @test DGGRIDParams.get_parameter(params, "dggs_vert0_lat") == 58.2825
+            @test DGGRIDParams.get_parameter(params, "longitude_wrap_mode") == "UNWRAP_EAST"
         end
         
         @testset "Shapefile output type" begin
             # Create params with SHAPEFILE output type
-            params = DggridParams.DGGRIDMetafile()
-            DggridParams.add_parameter!(params, "dggrid_operation", "GENERATE_GRID")
-            DggridParams.add_parameter!(params, "dggs_type", "ISEA7H")
-            DggridParams.add_parameter!(params, "dggs_res_spec", 3)
-            DggridParams.add_parameter!(params, "cell_output_type", "SHAPEFILE")
-            DggridParams.add_parameter!(params, "output_address_type", "SEQNUM")
+            params = DGGRIDParams.DGGRIDMetafile()
+            DGGRIDParams.add_parameter!(params, "dggrid_operation", "GENERATE_GRID")
+            DGGRIDParams.add_parameter!(params, "dggs_type", "ISEA7H")
+            DGGRIDParams.add_parameter!(params, "dggs_res_spec", 3)
+            DGGRIDParams.add_parameter!(params, "cell_output_type", "SHAPEFILE")
+            DGGRIDParams.add_parameter!(params, "output_address_type", "SEQNUM")
             
             # Apply convenience function
             grid_gen_convenience!(params)
             
             # Check that shapefile_id_field_length was added
-            @test DggridParams.get_parameter(params, "shapefile_id_field_length") == 22
+            @test DGGRIDParams.get_parameter(params, "shapefile_id_field_length") == 22
         end
         
         @testset "Non-Shapefile output type (GDAL)" begin
@@ -428,27 +428,27 @@ Res                 # Cells        Area (km^2)      CLS (km)
             grid_gen_convenience!(params)
             
             # Check that shapefile_id_field_length was NOT added
-            @test DggridParams.get_parameter(params, "shapefile_id_field_length") === nothing
+            @test DGGRIDParams.get_parameter(params, "shapefile_id_field_length") === nothing
         end
         
         @testset "Combined: HIERNDX + Shapefile" begin
             # Create params with both HIERNDX and SHAPEFILE
-            params = DggridParams.DGGRIDMetafile()
-            DggridParams.add_parameter!(params, "dggrid_operation", "GENERATE_GRID")
-            DggridParams.add_parameter!(params, "dggs_type", "IGEO7")
-            DggridParams.add_parameter!(params, "dggs_res_spec", 4)
-            DggridParams.add_parameter!(params, "output_address_type", "HIERNDX")
-            DggridParams.add_parameter!(params, "cell_output_type", "SHAPEFILE")
+            params = DGGRIDParams.DGGRIDMetafile()
+            DGGRIDParams.add_parameter!(params, "dggrid_operation", "GENERATE_GRID")
+            DGGRIDParams.add_parameter!(params, "dggs_type", "IGEO7")
+            DGGRIDParams.add_parameter!(params, "dggs_res_spec", 4)
+            DGGRIDParams.add_parameter!(params, "output_address_type", "HIERNDX")
+            DGGRIDParams.add_parameter!(params, "cell_output_type", "SHAPEFILE")
             
             # Apply convenience function
             grid_gen_convenience!(params)
             
             # Check that both sets of parameters were added
-            @test DggridParams.get_parameter(params, "output_hier_ndx_form") == "digit_string"
-            @test DggridParams.get_parameter(params, "dggs_vert0_lon") == 11.2
-            @test DggridParams.get_parameter(params, "dggs_vert0_lat") == 58.2825
-            @test DggridParams.get_parameter(params, "longitude_wrap_mode") == "UNWRAP_EAST"
-            @test DggridParams.get_parameter(params, "shapefile_id_field_length") == 22
+            @test DGGRIDParams.get_parameter(params, "output_hier_ndx_form") == "digit_string"
+            @test DGGRIDParams.get_parameter(params, "dggs_vert0_lon") == 11.2
+            @test DGGRIDParams.get_parameter(params, "dggs_vert0_lat") == 58.2825
+            @test DGGRIDParams.get_parameter(params, "longitude_wrap_mode") == "UNWRAP_EAST"
+            @test DGGRIDParams.get_parameter(params, "shapefile_id_field_length") == 22
         end
     end
 end

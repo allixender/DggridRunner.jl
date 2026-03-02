@@ -1,4 +1,4 @@
-using DggridRunner
+using DGGRIDRunner
 using Test
 
 @testset "DggridRunner.jl" begin
