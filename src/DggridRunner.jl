@@ -1,13 +1,13 @@
-module DggridRunner
+module DGGRIDRunner
 
 include("DggridParams.jl")
-import .DggridParams
+import .DGGRIDParams
 
 include("AuthalicConversion.jl")
 import .AuthalicConversion
 
-# re-export DggridParams module
-export DggridParams
+# re-export DGGRIDParams module
+export DGGRIDParams
 export AuthalicConversion
 
 # export functions
@@ -64,12 +64,12 @@ function prep_output_stats(dggs_type::String, resolution::Int)
     # dggs_res_spec 20
     # precision 7 (default)
     # verbosity 0 (default)
-    params = DggridParams.DGGRIDMetafile()
-    DggridParams.add_parameter!(params, "dggrid_operation", "OUTPUT_STATS")
-    DggridParams.add_parameter!(params, "dggs_type", dggs_type)
-    # DggridParams.add_parameter!(params, "dggs_res_specify_type", "SPECIFIED")
-    DggridParams.add_parameter!(params, "dggs_res_spec", resolution)
-    is_ok = DggridParams.validate_metafile(params)
+    params = DGGRIDParams.DGGRIDMetafile()
+    DGGRIDParams.add_parameter!(params, "dggrid_operation", "OUTPUT_STATS")
+    DGGRIDParams.add_parameter!(params, "dggs_type", dggs_type)
+    # DGGRIDParams.add_parameter!(params, "dggs_res_specify_type", "SPECIFIED")
+    DGGRIDParams.add_parameter!(params, "dggs_res_spec", resolution)
+    is_ok = DGGRIDParams.validate_metafile(params)
     if !is_ok[1]
         for err in is_ok[2]
             println(" - $err")
@@ -118,7 +118,7 @@ function parse_output_stats(lines::Vector{<:AbstractString})
     return stats
 end
 
-function run_output_stats(params::DggridParams.DGGRIDMetafile; temp_prefix::String = "")
+function run_output_stats(params::DGGRIDParams.DGGRIDMetafile; temp_prefix::String = "")
     # PipeBuffer is a type of IOBuffer
     # create temporary metafile
     metafile = if temp_prefix == ""
@@ -127,7 +127,7 @@ function run_output_stats(params::DggridParams.DGGRIDMetafile; temp_prefix::Stri
             tempname(temp_prefix)
     end
 
-    DggridParams.write_metafile(params, metafile)
+    DGGRIDParams.write_metafile(params, metafile)
     println("Created temporary metafile at: $metafile")
 
     shell_io = PipeBuffer()
@@ -157,7 +157,7 @@ function run_output_stats(params::DggridParams.DGGRIDMetafile; temp_prefix::Stri
 end
 
 # optionally provide prefix for temporary files as paramter
-function run_dggrid_simple(params::DggridParams.DGGRIDMetafile; temp_prefix::String = "")
+function run_dggrid_simple(params::DGGRIDParams.DGGRIDMetafile; temp_prefix::String = "")
     # create temporary metafile
     metafile = if temp_prefix == ""
             tempname()
@@ -165,7 +165,7 @@ function run_dggrid_simple(params::DggridParams.DGGRIDMetafile; temp_prefix::Str
             tempname(temp_prefix)
     end
 
-    DggridParams.write_metafile(params, metafile)
+    DGGRIDParams.write_metafile(params, metafile)
     println("Created temporary metafile at: $metafile")
     
     # run dggrid with metafile
@@ -240,13 +240,13 @@ function prep_generate_grid_whole_earth(dggs_type::String,
                                         point_output::Bool=false)
     
     # Create metafile with basic parameters
-    params = DggridParams.DGGRIDMetafile()
-    DggridParams.add_parameter!(params, "dggrid_operation", "GENERATE_GRID")
-    DggridParams.add_parameter!(params, "dggs_type", dggs_type)
-    DggridParams.add_parameter!(params, "dggs_res_spec", resolution)
+    params = DGGRIDParams.DGGRIDMetafile()
+    DGGRIDParams.add_parameter!(params, "dggrid_operation", "GENERATE_GRID")
+    DGGRIDParams.add_parameter!(params, "dggs_type", dggs_type)
+    DGGRIDParams.add_parameter!(params, "dggs_res_spec", resolution)
     
     # Set clip type for whole earth
-    DggridParams.add_parameter!(params, "clip_subset_type", "WHOLE_EARTH")
+    DGGRIDParams.add_parameter!(params, "clip_subset_type", "WHOLE_EARTH")
 
     # Generate output file path
     output_prefix = if output_dir == ""
@@ -268,48 +268,48 @@ function prep_generate_grid_whole_earth(dggs_type::String,
     # Configure output format based on point_output flag
     if point_output
         # Configure point output
-        DggridParams.add_parameter!(params, "point_output_type", "GDAL")
-        DggridParams.add_parameter!(params, "point_output_gdal_format", output_format)
-        DggridParams.add_parameter!(params, "point_output_file_name", output_path)
+        DGGRIDParams.add_parameter!(params, "point_output_type", "GDAL")
+        DGGRIDParams.add_parameter!(params, "point_output_gdal_format", output_format)
+        DGGRIDParams.add_parameter!(params, "point_output_file_name", output_path)
         
         # Disable cell output
-        DggridParams.add_parameter!(params, "cell_output_type", "NONE")
+        DGGRIDParams.add_parameter!(params, "cell_output_type", "NONE")
     else
         # Configure cell output
-        DggridParams.add_parameter!(params, "cell_output_type", "GDAL")
-        DggridParams.add_parameter!(params, "cell_output_gdal_format", output_format)
-        DggridParams.add_parameter!(params, "cell_output_file_name", output_path)
+        DGGRIDParams.add_parameter!(params, "cell_output_type", "GDAL")
+        DGGRIDParams.add_parameter!(params, "cell_output_gdal_format", output_format)
+        DGGRIDParams.add_parameter!(params, "cell_output_file_name", output_path)
         
         # Disable point output
-        DggridParams.add_parameter!(params, "point_output_type", "NONE")
+        DGGRIDParams.add_parameter!(params, "point_output_type", "NONE")
     end
     
     # Set address type for output labels
     if address_type == "HIERNDX"
-        DggridParams.add_parameter!(params, "output_cell_label_type", "OUTPUT_ADDRESS_TYPE")
-        DggridParams.add_parameter!(params, "output_address_type", "HIERNDX")
+        DGGRIDParams.add_parameter!(params, "output_cell_label_type", "OUTPUT_ADDRESS_TYPE")
+        DGGRIDParams.add_parameter!(params, "output_address_type", "HIERNDX")
         if (dggs_type in ["IGEO7", "ISEA7H"])
-            DggridParams.add_parameter!(params, "output_hier_ndx_system", "Z7")
+            DGGRIDParams.add_parameter!(params, "output_hier_ndx_system", "Z7")
         elseif (dggs_type in ["ISEA3H"])
-            DggridParams.add_parameter!(params, "output_hier_ndx_system", "Z3")
+            DGGRIDParams.add_parameter!(params, "output_hier_ndx_system", "Z3")
         elseif (dggs_type in ["ISEA4H"])
-            DggridParams.add_parameter!(params, "output_hier_ndx_system", "ZORDER")
+            DGGRIDParams.add_parameter!(params, "output_hier_ndx_system", "ZORDER")
         end
-        DggridParams.add_parameter!(params, "output_hier_ndx_form", "INT64")
+        DGGRIDParams.add_parameter!(params, "output_hier_ndx_form", "INT64")
     elseif address_type == "SEQNUM"
-        DggridParams.add_parameter!(params, "output_cell_label_type", "GLOBAL_SEQUENCE")
+        DGGRIDParams.add_parameter!(params, "output_cell_label_type", "GLOBAL_SEQUENCE")
     elseif address_type == "Q2DI"
-        DggridParams.add_parameter!(params, "output_cell_label_type", "OUTPUT_ADDRESS_TYPE")
-        DggridParams.add_parameter!(params, "output_address_type", "Q2DI")
+        DGGRIDParams.add_parameter!(params, "output_cell_label_type", "OUTPUT_ADDRESS_TYPE")
+        DGGRIDParams.add_parameter!(params, "output_address_type", "Q2DI")
     end
     
     # Set densification
     if densification > 0
-        DggridParams.add_parameter!(params, "densification", densification)
+        DGGRIDParams.add_parameter!(params, "densification", densification)
     end
     
     # Validate parameters
-    is_ok = DggridParams.validate_metafile(params)
+    is_ok = DGGRIDParams.validate_metafile(params)
     if !is_ok[1]
         println("ERROR: Invalid DGGRID parameters for GENERATE_GRID (whole earth):")
         for err in is_ok[2]
@@ -383,23 +383,23 @@ function prep_generate_grid_coarse_cells(dggs_type::String,
     # Validate coarse resolution
     if coarse_res <= 0 || coarse_res >= resolution
         println("ERROR: coarse_res must be > 0 and < resolution ($resolution)")
-        return (false, DggridParams.DGGRIDMetafile(), "")
+        return (false, DGGRIDParams.DGGRIDMetafile(), "")
     end
     
     if isempty(coarse_cells)
         println("ERROR: coarse_cells cannot be empty")
-        return (false, DggridParams.DGGRIDMetafile(), "")
+        return (false, DGGRIDParams.DGGRIDMetafile(), "")
     end
     
     # Create metafile with basic parameters
-    params = DggridParams.DGGRIDMetafile()
-    DggridParams.add_parameter!(params, "dggrid_operation", "GENERATE_GRID")
-    DggridParams.add_parameter!(params, "dggs_type", dggs_type)
-    DggridParams.add_parameter!(params, "dggs_res_spec", resolution)
+    params = DGGRIDParams.DGGRIDMetafile()
+    DGGRIDParams.add_parameter!(params, "dggrid_operation", "GENERATE_GRID")
+    DGGRIDParams.add_parameter!(params, "dggs_type", dggs_type)
+    DGGRIDParams.add_parameter!(params, "dggs_res_spec", resolution)
     
     # Set clip type for coarse cells
-    DggridParams.add_parameter!(params, "clip_subset_type", "COARSE_CELLS")
-    DggridParams.add_parameter!(params, "clip_cell_res", coarse_res)
+    DGGRIDParams.add_parameter!(params, "clip_subset_type", "COARSE_CELLS")
+    DGGRIDParams.add_parameter!(params, "clip_cell_res", coarse_res)
     
     # Convert seqnums to space-delimited string
     # we can have both clip_cell_seqnums when address_type is SEQNUM and clip_cell_addresses when address_type is HIERNDX or Q2DI
@@ -407,22 +407,22 @@ function prep_generate_grid_coarse_cells(dggs_type::String,
     # seqnums are integers but addresses are strings
     addresses_str = join(coarse_cells, " ")
     if address_type == "SEQNUM"
-        DggridParams.add_parameter!(params, "clip_cell_seqnums", addresses_str)
+        DGGRIDParams.add_parameter!(params, "clip_cell_seqnums", addresses_str)
     elseif address_type == "HIERNDX"
-        DggridParams.add_parameter!(params, "clip_cell_addresses", addresses_str)
-        DggridParams.add_parameter!(params, "input_address_type", "HIERNDX")
+        DGGRIDParams.add_parameter!(params, "clip_cell_addresses", addresses_str)
+        DGGRIDParams.add_parameter!(params, "input_address_type", "HIERNDX")
         if (dggs_type in ["IGEO7", "ISEA7H"])
-            DggridParams.add_parameter!(params, "input_hier_ndx_system", "Z7")
+            DGGRIDParams.add_parameter!(params, "input_hier_ndx_system", "Z7")
         elseif (dggs_type in ["ISEA3H"])
-            DggridParams.add_parameter!(params, "input_hier_ndx_system", "Z3")
+            DGGRIDParams.add_parameter!(params, "input_hier_ndx_system", "Z3")
         elseif (dggs_type in ["ISEA4H"])
-            DggridParams.add_parameter!(params, "input_hier_ndx_system", "ZORDER")
+            DGGRIDParams.add_parameter!(params, "input_hier_ndx_system", "ZORDER")
         end
-        DggridParams.add_parameter!(params, "input_hier_ndx_form", "INT64")
+        DGGRIDParams.add_parameter!(params, "input_hier_ndx_form", "INT64")
     elseif address_type == "Q2DI"
         # we don't know if that is defined behaviour
     end
-    DggridParams.add_parameter!(params, "clip_cell_densification", clip_densification)
+    DGGRIDParams.add_parameter!(params, "clip_cell_densification", clip_densification)
     
     # Generate output file path
     output_prefix = if output_dir == ""
@@ -444,48 +444,48 @@ function prep_generate_grid_coarse_cells(dggs_type::String,
     # Configure output format based on point_output flag
     if point_output
         # Configure point output
-        DggridParams.add_parameter!(params, "point_output_type", "GDAL")
-        DggridParams.add_parameter!(params, "point_output_gdal_format", output_format)
-        DggridParams.add_parameter!(params, "point_output_file_name", output_path)
+        DGGRIDParams.add_parameter!(params, "point_output_type", "GDAL")
+        DGGRIDParams.add_parameter!(params, "point_output_gdal_format", output_format)
+        DGGRIDParams.add_parameter!(params, "point_output_file_name", output_path)
         
         # Disable cell output
-        DggridParams.add_parameter!(params, "cell_output_type", "NONE")
+        DGGRIDParams.add_parameter!(params, "cell_output_type", "NONE")
     else
         # Configure cell output
-        DggridParams.add_parameter!(params, "cell_output_type", "GDAL")
-        DggridParams.add_parameter!(params, "cell_output_gdal_format", output_format)
-        DggridParams.add_parameter!(params, "cell_output_file_name", output_path)
+        DGGRIDParams.add_parameter!(params, "cell_output_type", "GDAL")
+        DGGRIDParams.add_parameter!(params, "cell_output_gdal_format", output_format)
+        DGGRIDParams.add_parameter!(params, "cell_output_file_name", output_path)
         
         # Disable point output
-        DggridParams.add_parameter!(params, "point_output_type", "NONE")
+        DGGRIDParams.add_parameter!(params, "point_output_type", "NONE")
     end
     
     # Set address type for output labels
     if address_type == "HIERNDX"
-        DggridParams.add_parameter!(params, "output_cell_label_type", "OUTPUT_ADDRESS_TYPE")
-        DggridParams.add_parameter!(params, "output_address_type", "HIERNDX")
+        DGGRIDParams.add_parameter!(params, "output_cell_label_type", "OUTPUT_ADDRESS_TYPE")
+        DGGRIDParams.add_parameter!(params, "output_address_type", "HIERNDX")
         if (dggs_type in ["IGEO7", "ISEA7H"])
-            DggridParams.add_parameter!(params, "output_hier_ndx_system", "Z7")
+            DGGRIDParams.add_parameter!(params, "output_hier_ndx_system", "Z7")
         elseif (dggs_type in ["ISEA3H"])
-            DggridParams.add_parameter!(params, "output_hier_ndx_system", "Z3")
+            DGGRIDParams.add_parameter!(params, "output_hier_ndx_system", "Z3")
         elseif (dggs_type in ["ISEA4H"])
-            DggridParams.add_parameter!(params, "output_hier_ndx_system", "ZORDER")
+            DGGRIDParams.add_parameter!(params, "output_hier_ndx_system", "ZORDER")
         end
-        DggridParams.add_parameter!(params, "output_hier_ndx_form", "INT64")
+        DGGRIDParams.add_parameter!(params, "output_hier_ndx_form", "INT64")
     elseif address_type == "SEQNUM"
-        DggridParams.add_parameter!(params, "output_cell_label_type", "GLOBAL_SEQUENCE")
+        DGGRIDParams.add_parameter!(params, "output_cell_label_type", "GLOBAL_SEQUENCE")
     elseif address_type == "Q2DI"
-        DggridParams.add_parameter!(params, "output_cell_label_type", "OUTPUT_ADDRESS_TYPE")
-        DggridParams.add_parameter!(params, "output_address_type", "Q2DI")
+        DGGRIDParams.add_parameter!(params, "output_cell_label_type", "OUTPUT_ADDRESS_TYPE")
+        DGGRIDParams.add_parameter!(params, "output_address_type", "Q2DI")
     end
     
     # Set densification
     if densification > 0
-        DggridParams.add_parameter!(params, "densification", densification)
+        DGGRIDParams.add_parameter!(params, "densification", densification)
     end
     
     # Validate parameters
-    is_ok = DggridParams.validate_metafile(params)
+    is_ok = DGGRIDParams.validate_metafile(params)
     if !is_ok[1]
         println("ERROR: Invalid DGGRID parameters for GENERATE_GRID (coarse cells):")
         for err in is_ok[2]
@@ -565,27 +565,27 @@ function prep_generate_grid_clip_region(dggs_type::String,
     # Validate clip file exists
     if !isfile(clip_file)
         println("ERROR: Clip file does not exist: $clip_file")
-        return (false, DggridParams.DGGRIDMetafile(), "")
+        return (false, DGGRIDParams.DGGRIDMetafile(), "")
     end
     
     # Create metafile with basic parameters
-    params = DggridParams.DGGRIDMetafile()
-    DggridParams.add_parameter!(params, "dggrid_operation", "GENERATE_GRID")
-    DggridParams.add_parameter!(params, "dggs_type", dggs_type)
-    DggridParams.add_parameter!(params, "dggs_res_spec", resolution)
+    params = DGGRIDParams.DGGRIDMetafile()
+    DGGRIDParams.add_parameter!(params, "dggrid_operation", "GENERATE_GRID")
+    DGGRIDParams.add_parameter!(params, "dggs_type", dggs_type)
+    DGGRIDParams.add_parameter!(params, "dggs_res_spec", resolution)
     
     # Set clip type for spatial file
-    DggridParams.add_parameter!(params, "clip_subset_type", "GDAL")
-    DggridParams.add_parameter!(params, "clip_region_files", clip_file)
+    DGGRIDParams.add_parameter!(params, "clip_subset_type", "GDAL")
+    DGGRIDParams.add_parameter!(params, "clip_region_files", clip_file)
     
     # Set geodetic densification if specified
     if geodetic_densify > 0.0
-        DggridParams.add_parameter!(params, "geodetic_densify", geodetic_densify)
+        DGGRIDParams.add_parameter!(params, "geodetic_densify", geodetic_densify)
     end
     
     # Set hole handling
     if use_holes
-        DggridParams.add_parameter!(params, "clip_using_holes", true)
+        DGGRIDParams.add_parameter!(params, "clip_using_holes", true)
     end
     
     # Generate output file path
@@ -609,48 +609,48 @@ function prep_generate_grid_clip_region(dggs_type::String,
     # Configure output format based on point_output flag
     if point_output
         # Configure point output
-        DggridParams.add_parameter!(params, "point_output_type", "GDAL")
-        DggridParams.add_parameter!(params, "point_output_gdal_format", output_format)
-        DggridParams.add_parameter!(params, "point_output_file_name", output_path)
+        DGGRIDParams.add_parameter!(params, "point_output_type", "GDAL")
+        DGGRIDParams.add_parameter!(params, "point_output_gdal_format", output_format)
+        DGGRIDParams.add_parameter!(params, "point_output_file_name", output_path)
         
         # Disable cell output
-        DggridParams.add_parameter!(params, "cell_output_type", "NONE")
+        DGGRIDParams.add_parameter!(params, "cell_output_type", "NONE")
     else
         # Configure cell output
-        DggridParams.add_parameter!(params, "cell_output_type", "GDAL")
-        DggridParams.add_parameter!(params, "cell_output_gdal_format", output_format)
-        DggridParams.add_parameter!(params, "cell_output_file_name", output_path)
+        DGGRIDParams.add_parameter!(params, "cell_output_type", "GDAL")
+        DGGRIDParams.add_parameter!(params, "cell_output_gdal_format", output_format)
+        DGGRIDParams.add_parameter!(params, "cell_output_file_name", output_path)
         
         # Disable point output
-        DggridParams.add_parameter!(params, "point_output_type", "NONE")
+        DGGRIDParams.add_parameter!(params, "point_output_type", "NONE")
     end
     
     # Set address type for output labels
     if address_type == "HIERNDX"
-        DggridParams.add_parameter!(params, "output_cell_label_type", "OUTPUT_ADDRESS_TYPE")
-        DggridParams.add_parameter!(params, "output_address_type", "HIERNDX")
+        DGGRIDParams.add_parameter!(params, "output_cell_label_type", "OUTPUT_ADDRESS_TYPE")
+        DGGRIDParams.add_parameter!(params, "output_address_type", "HIERNDX")
         if (dggs_type in ["IGEO7", "ISEA7H"])
-            DggridParams.add_parameter!(params, "output_hier_ndx_system", "Z7")
+            DGGRIDParams.add_parameter!(params, "output_hier_ndx_system", "Z7")
         elseif (dggs_type in ["ISEA3H"])
-            DggridParams.add_parameter!(params, "output_hier_ndx_system", "Z3")
+            DGGRIDParams.add_parameter!(params, "output_hier_ndx_system", "Z3")
         elseif (dggs_type in ["ISEA4H"])
-            DggridParams.add_parameter!(params, "output_hier_ndx_system", "ZORDER")
+            DGGRIDParams.add_parameter!(params, "output_hier_ndx_system", "ZORDER")
         end
-        DggridParams.add_parameter!(params, "output_hier_ndx_form", "INT64")
+        DGGRIDParams.add_parameter!(params, "output_hier_ndx_form", "INT64")
     elseif address_type == "SEQNUM"
-        DggridParams.add_parameter!(params, "output_cell_label_type", "GLOBAL_SEQUENCE")
+        DGGRIDParams.add_parameter!(params, "output_cell_label_type", "GLOBAL_SEQUENCE")
     elseif address_type == "Q2DI"
-        DggridParams.add_parameter!(params, "output_cell_label_type", "OUTPUT_ADDRESS_TYPE")
-        DggridParams.add_parameter!(params, "output_address_type", "Q2DI")
+        DGGRIDParams.add_parameter!(params, "output_cell_label_type", "OUTPUT_ADDRESS_TYPE")
+        DGGRIDParams.add_parameter!(params, "output_address_type", "Q2DI")
     end
     
     # Set densification
     if densification > 0
-        DggridParams.add_parameter!(params, "densification", densification)
+        DGGRIDParams.add_parameter!(params, "densification", densification)
     end
     
     # Validate parameters
-    is_ok = DggridParams.validate_metafile(params)
+    is_ok = DGGRIDParams.validate_metafile(params)
     if !is_ok[1]
         println("ERROR: Invalid DGGRID parameters for GENERATE_GRID (clip region):")
         for err in is_ok[2]
@@ -731,40 +731,40 @@ function prep_generate_grid_clip_cells( dggs_type::String,
     # Validate clip file exists
     if !isfile(clip_file)
         println("ERROR: Clip file does not exist: $clip_file")
-        return (false, DggridParams.DGGRIDMetafile(), "")
+        return (false, DGGRIDParams.DGGRIDMetafile(), "")
     end
     
     # Create metafile with basic parameters
-    params = DggridParams.DGGRIDMetafile()
-    DggridParams.add_parameter!(params, "dggrid_operation", "GENERATE_GRID")
-    DggridParams.add_parameter!(params, "dggs_type", dggs_type)
-    DggridParams.add_parameter!(params, "dggs_res_spec", resolution)
+    params = DGGRIDParams.DGGRIDMetafile()
+    DGGRIDParams.add_parameter!(params, "dggrid_operation", "GENERATE_GRID")
+    DGGRIDParams.add_parameter!(params, "dggs_type", dggs_type)
+    DGGRIDParams.add_parameter!(params, "dggs_res_spec", resolution)
     
     # Set clip type for spatial file
-    DggridParams.add_parameter!(params, "clip_subset_type", "INPUT_ADDRESS_TYPE")
-    DggridParams.add_parameter!(params, "clip_region_files", clip_file)
-    DggridParams.add_parameter!(params, "input_address_type", input_address_type)
+    DGGRIDParams.add_parameter!(params, "clip_subset_type", "INPUT_ADDRESS_TYPE")
+    DGGRIDParams.add_parameter!(params, "clip_region_files", clip_file)
+    DGGRIDParams.add_parameter!(params, "input_address_type", input_address_type)
     
     if input_address_type == "SEQNUM"
         # pass
         
     elseif input_address_type == "HIERNDX"
-        DggridParams.add_parameter!(params, "input_address_type", "HIERNDX")
+        DGGRIDParams.add_parameter!(params, "input_address_type", "HIERNDX")
         if (dggs_type in ["IGEO7", "ISEA7H"])
-            DggridParams.add_parameter!(params, "input_hier_ndx_system", "Z7")
+            DGGRIDParams.add_parameter!(params, "input_hier_ndx_system", "Z7")
         elseif (dggs_type in ["ISEA3H"])
-            DggridParams.add_parameter!(params, "input_hier_ndx_system", "Z3")
+            DGGRIDParams.add_parameter!(params, "input_hier_ndx_system", "Z3")
         elseif (dggs_type in ["ISEA4H"])
-            DggridParams.add_parameter!(params, "input_hier_ndx_system", "ZORDER")
+            DGGRIDParams.add_parameter!(params, "input_hier_ndx_system", "ZORDER")
         end
-        DggridParams.add_parameter!(params, "input_hier_ndx_form", "INT64")
+        DGGRIDParams.add_parameter!(params, "input_hier_ndx_form", "INT64")
     elseif input_address_type == "Q2DI"
         # we don't know if that is defined behaviour
     end
 
     # Set geodetic densification if specified
     if geodetic_densify > 0.0
-        DggridParams.add_parameter!(params, "geodetic_densify", geodetic_densify)
+        DGGRIDParams.add_parameter!(params, "geodetic_densify", geodetic_densify)
     end
     
     # Generate output file path
@@ -788,48 +788,48 @@ function prep_generate_grid_clip_cells( dggs_type::String,
     # Configure output format based on point_output flag
     if point_output
         # Configure point output
-        DggridParams.add_parameter!(params, "point_output_type", "GDAL")
-        DggridParams.add_parameter!(params, "point_output_gdal_format", output_format)
-        DggridParams.add_parameter!(params, "point_output_file_name", output_path)
+        DGGRIDParams.add_parameter!(params, "point_output_type", "GDAL")
+        DGGRIDParams.add_parameter!(params, "point_output_gdal_format", output_format)
+        DGGRIDParams.add_parameter!(params, "point_output_file_name", output_path)
         
         # Disable cell output
-        DggridParams.add_parameter!(params, "cell_output_type", "NONE")
+        DGGRIDParams.add_parameter!(params, "cell_output_type", "NONE")
     else
         # Configure cell output
-        DggridParams.add_parameter!(params, "cell_output_type", "GDAL")
-        DggridParams.add_parameter!(params, "cell_output_gdal_format", output_format)
-        DggridParams.add_parameter!(params, "cell_output_file_name", output_path)
+        DGGRIDParams.add_parameter!(params, "cell_output_type", "GDAL")
+        DGGRIDParams.add_parameter!(params, "cell_output_gdal_format", output_format)
+        DGGRIDParams.add_parameter!(params, "cell_output_file_name", output_path)
         
         # Disable point output
-        DggridParams.add_parameter!(params, "point_output_type", "NONE")
+        DGGRIDParams.add_parameter!(params, "point_output_type", "NONE")
     end
     
     # Set address type for output labels
     if output_address_type == "HIERNDX"
-        DggridParams.add_parameter!(params, "output_cell_label_type", "OUTPUT_ADDRESS_TYPE")
-        DggridParams.add_parameter!(params, "output_address_type", "HIERNDX")
+        DGGRIDParams.add_parameter!(params, "output_cell_label_type", "OUTPUT_ADDRESS_TYPE")
+        DGGRIDParams.add_parameter!(params, "output_address_type", "HIERNDX")
         if (dggs_type in ["IGEO7", "ISEA7H"])
-            DggridParams.add_parameter!(params, "output_hier_ndx_system", "Z7")
+            DGGRIDParams.add_parameter!(params, "output_hier_ndx_system", "Z7")
         elseif (dggs_type in ["ISEA3H"])
-            DggridParams.add_parameter!(params, "output_hier_ndx_system", "Z3")
+            DGGRIDParams.add_parameter!(params, "output_hier_ndx_system", "Z3")
         elseif (dggs_type in ["ISEA4H"])
-            DggridParams.add_parameter!(params, "output_hier_ndx_system", "ZORDER")
+            DGGRIDParams.add_parameter!(params, "output_hier_ndx_system", "ZORDER")
         end
-        DggridParams.add_parameter!(params, "output_hier_ndx_form", "INT64")
+        DGGRIDParams.add_parameter!(params, "output_hier_ndx_form", "INT64")
     elseif output_address_type == "SEQNUM"
-        DggridParams.add_parameter!(params, "output_cell_label_type", "GLOBAL_SEQUENCE")
+        DGGRIDParams.add_parameter!(params, "output_cell_label_type", "GLOBAL_SEQUENCE")
     elseif address_type == "Q2DI"
-        DggridParams.add_parameter!(params, "output_cell_label_type", "OUTPUT_ADDRESS_TYPE")
-        DggridParams.add_parameter!(params, "output_address_type", "Q2DI")
+        DGGRIDParams.add_parameter!(params, "output_cell_label_type", "OUTPUT_ADDRESS_TYPE")
+        DGGRIDParams.add_parameter!(params, "output_address_type", "Q2DI")
     end
     
     # Set densification
     if densification > 0
-        DggridParams.add_parameter!(params, "densification", densification)
+        DGGRIDParams.add_parameter!(params, "densification", densification)
     end
     
     # Validate parameters
-    is_ok = DggridParams.validate_metafile(params)
+    is_ok = DGGRIDParams.validate_metafile(params)
     if !is_ok[1]
         println("ERROR: Invalid DGGRID parameters for GENERATE_GRID (clip region):")
         for err in is_ok[2]
@@ -844,7 +844,7 @@ function prep_generate_grid_clip_cells( dggs_type::String,
 end
 
 
-function grid_gen_convenience!(params::DggridParams.DGGRIDMetafile; longitude_wrap_mode="UNWRAP_EAST", dggs_vert0_lon=11.2)
+function grid_gen_convenience!(params::DGGRIDParams.DGGRIDMetafile; longitude_wrap_mode="UNWRAP_EAST", dggs_vert0_lon=11.2)
     # 
     # if dggs_type IGEO7 or ISEA7H and HIERNDX address type, switch to digit_string
     # input_hier_ndx_form digit_string
@@ -855,37 +855,37 @@ function grid_gen_convenience!(params::DggridParams.DGGRIDMetafile; longitude_wr
     # longitude_wrap_mode UNWRAP_EAST
     # if using shapefile we need to add
     # shapefile_id_field_length 22
-    dggs_type = DggridParams.get_parameter(params, "dggs_type")
-    address_type = DggridParams.get_parameter(params, "output_address_type")
+    dggs_type = DGGRIDParams.get_parameter(params, "dggs_type")
+    address_type = DGGRIDParams.get_parameter(params, "output_address_type")
     if (dggs_type in ["IGEO7", "ISEA7H", "ISEA3H", "ISEA4H"]) && (address_type == "HIERNDX")
-        # DggridParams.add_parameter!(params, "input_hier_ndx_form", "digit_string")
-        DggridParams.add_parameter!(params, "output_hier_ndx_form", "digit_string")
+        # DGGRIDParams.add_parameter!(params, "input_hier_ndx_form", "digit_string")
+        DGGRIDParams.add_parameter!(params, "output_hier_ndx_form", "digit_string")
 
-        operation = DggridParams.get_parameter(params, "dggrid_operation")
-        clip_type = DggridParams.get_parameter(params, "clip_subset_type")
+        operation = DGGRIDParams.get_parameter(params, "dggrid_operation")
+        clip_type = DGGRIDParams.get_parameter(params, "clip_subset_type")
         if (operation == "GENERATE_GRID") && ( clip_type == "COARSE_CELLS")
-            DggridParams.add_parameter!(params, "input_hier_ndx_form", "digit_string")
+            DGGRIDParams.add_parameter!(params, "input_hier_ndx_form", "digit_string")
         elseif (operation == "GENERATE_GRID") && ( clip_type == "INPUT_ADDRESS_TYPE")
-            if DggridParams.get_parameter(params, "input_address_type") == "HIERNDX"
-                DggridParams.add_parameter!(params, "input_hier_ndx_form", "digit_string")
+            if DGGRIDParams.get_parameter(params, "input_address_type") == "HIERNDX"
+                DGGRIDParams.add_parameter!(params, "input_hier_ndx_form", "digit_string")
             end
         end
         if (operation == "TRANSFORM_ADDRESSES")
-            DggridParams.add_parameter!(params, "input_hier_ndx_form", "digit_string")
+            DGGRIDParams.add_parameter!(params, "input_hier_ndx_form", "digit_string")
         end
     end
 
-    DggridParams.add_parameter!(params, "dggs_vert0_lon", dggs_vert0_lon)
-    DggridParams.add_parameter!(params, "dggs_vert0_lat", 58.2825)
-    DggridParams.add_parameter!(params, "longitude_wrap_mode", longitude_wrap_mode)
+    DGGRIDParams.add_parameter!(params, "dggs_vert0_lon", dggs_vert0_lon)
+    DGGRIDParams.add_parameter!(params, "dggs_vert0_lat", 58.2825)
+    DGGRIDParams.add_parameter!(params, "longitude_wrap_mode", longitude_wrap_mode)
 
-    cell_output_type = DggridParams.get_parameter(params, "cell_output_type")
+    cell_output_type = DGGRIDParams.get_parameter(params, "cell_output_type")
     if cell_output_type == "SHAPEFILE"
-        DggridParams.add_parameter!(params, "shapefile_id_field_length", 22)
+        DGGRIDParams.add_parameter!(params, "shapefile_id_field_length", 22)
     end
 
     # Validate parameters
-    is_ok = DggridParams.validate_metafile(params)
+    is_ok = DGGRIDParams.validate_metafile(params)
     if !is_ok[1]
         println("ERROR: Invalid DGGRID parameters for grid_gen_convenience update!:")
         for err in is_ok[2]
@@ -939,11 +939,11 @@ end # module
 # ---------------------------------------------
 
 if abspath(PROGRAM_FILE) == @__FILE__
-    import .DggridRunner
+    import .DGGRIDRunner
     
-    DggridRunner.dryrun()
+    DGGRIDRunner.dryrun()
 
-    DggridRunner.z3_coarse_and_convenience_test()
+    DGGRIDRunner.z3_coarse_and_convenience_test()
 end
 
 # dggs_type IGEO7
