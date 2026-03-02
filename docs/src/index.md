@@ -3,6 +3,14 @@
 A Julia wrapper for the [DGGRID](https://discreteglobalgrids.org/) CLI tool,
 providing high-level functions to create and query Discrete Global Grid Systems (DGGS).
 
+[DGGRID](https://www.discreteglobalgrids.org/software/) is a free software program for creating and manipulating Discrete Global Grids created and maintained by Kevin Sahr.
+
+- [DGGRID Version 8.43 on GitHub](https://github.com/sahrk/DGGRID)
+- [DGGRID User Manual](https://github.com/sahrk/DGGRID/blob/master/dggridManualV841.pdf)
+
+[![Population Gridded](day-04-hexa.png)](https://twitter.com/allixender/status/1324055326111485959)
+
+
 ## Installation
 
 ```julia
