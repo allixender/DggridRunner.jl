@@ -12,6 +12,8 @@ prep_generate_grid_coarse_cells
 prep_generate_grid_clip_region
 prep_generate_grid_clip_cells
 grid_gen_convenience!
+suggest_clip_params
+apply_clip_params!
 ```
 
 ## DGGRIDParams
@@ -37,7 +39,6 @@ DGGRIDParams.get_parameter_info
 AuthalicConversion.AuthalicToWGS84
 AuthalicConversion.WGS84ToAuthalic
 AuthalicConversion.transform_and_unwrap
-AuthalicConversion.transform_and_unwrap_point
 AuthalicConversion.unwrap_polygon_lon!
 AuthalicConversion.unwrap_polygon
 ```

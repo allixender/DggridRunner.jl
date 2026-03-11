@@ -28,6 +28,7 @@ export suggest_clip_params, apply_clip_params!
 import DGGRID7_jll
 import ArchGDAL
 import GeoInterface
+using Logging
 
 # const libs_paths = DGGRID7_jll.LIBPATH_list
 # const dggrid_exec = DGGRID7_jll.get_dggrid_path()
@@ -49,10 +50,9 @@ import GeoInterface
 
 # test version
 function dryrun()
-    DGGRID7_jll.dggrid() do dggrid_exec
-        lineinfo = readchomp(`$dggrid_exec -h`)
-        println("DGGRID Executable found: $lineinfo")
-    end
+    dggrid_cmd = DGGRID7_jll.dggrid()
+    lineinfo = readchomp(`$dggrid_cmd -h`)
+    @debug "DGGRID executable found" info=lineinfo
 end
 
 # ---------------------------------------------
@@ -81,12 +81,7 @@ function prep_output_stats(dggs_type::String, resolution::Int)
     DGGRIDParams.add_parameter!(params, "dggs_res_spec", resolution)
     is_ok = DGGRIDParams.validate_metafile(params)
     if !is_ok[1]
-        for err in is_ok[2]
-            println(" - $err")
-        end
-        # error("Invalid DGGRID parameters for OUTPUT_STATS")
-    else
-        println("DGGRID parameters validated successfully.")
+        @warn "Invalid DGGRID parameters for OUTPUT_STATS" errors=is_ok[2]
     end
     return (true, params)
 end
@@ -154,15 +149,13 @@ function run_output_stats(params::DGGRIDParams.DGGRIDMetafile; temp_prefix::Stri
     end
 
     DGGRIDParams.write_metafile(params, metafile)
-    println("Created temporary metafile at: $metafile")
+    @debug "Created temporary metafile" path=metafile
 
     shell_io = PipeBuffer()
-    
-    DGGRID7_jll.dggrid() do dggrid_exec
-        # mycommand = `$dggrid_exec $metafile`
-        println("Running DGGRID with command: $dggrid_exec $metafile")
-        run(`$dggrid_exec $metafile`, devnull, shell_io, stderr)
-    end
+
+    dggrid_cmd = DGGRID7_jll.dggrid()
+    @debug "Running DGGRID" metafile=metafile
+    run(`$dggrid_cmd $metafile`, devnull, shell_io, stderr)
 
     stats_io_out = readlines(shell_io)
     needed_lines = String[]
@@ -170,15 +163,14 @@ function run_output_stats(params::DGGRIDParams.DGGRIDMetafile; temp_prefix::Stri
     for line in stats_io_out
         if occursin("Earth Radius", line)
             skip_out = false
-            # push!(needed_lines, line)
         end
         if !skip_out
             push!(needed_lines, line)
-            println(line)
+            @debug line
         end
     end
     stats = parse_output_stats(needed_lines)
-    println("Parsed stats: $stats")
+    @debug "Parsed stats" stats=stats
     return stats
 end
 
@@ -200,18 +192,18 @@ function run_dggrid_simple(params::DGGRIDParams.DGGRIDMetafile; temp_prefix::Str
     end
 
     DGGRIDParams.write_metafile(params, metafile)
-    println("Created temporary metafile at: $metafile")
-    
+    @debug "Created temporary metafile" path=metafile
+
     # run dggrid with metafile
-    DGGRID7_jll.dggrid() do dggrid_exec
-        cmd = `$dggrid_exec $metafile`
-        println("Running DGGRID with command: $cmd")
-        run(cmd)
-    end
-    
+    dggrid_cmd = DGGRID7_jll.dggrid()
+    @debug "Running DGGRID" metafile=metafile
+    shell_io = PipeBuffer()
+    run(`$dggrid_cmd $metafile`, devnull, shell_io, stderr)
+    @debug "DGGRID output" output=String(take!(shell_io))
+
     # optionally delete metafile
     rm(metafile; force=true)
-    println("Deleted temporary metafile.")
+    @debug "Deleted temporary metafile" path=metafile
 end
 
 # ---------------------------------------------
@@ -345,13 +337,8 @@ function prep_generate_grid_whole_earth(dggs_type::String,
     # Validate parameters
     is_ok = DGGRIDParams.validate_metafile(params)
     if !is_ok[1]
-        println("ERROR: Invalid DGGRID parameters for GENERATE_GRID (whole earth):")
-        for err in is_ok[2]
-            println(" - $err")
-        end
+        @warn "Invalid DGGRID parameters for GENERATE_GRID (whole earth)" errors=is_ok[2]
         return (false, params, "")
-    # else
-    #     println("DGGRID parameters validated successfully for whole earth grid generation.")
     end
     
     return (true, params, output_path)
@@ -416,12 +403,12 @@ function prep_generate_grid_coarse_cells(dggs_type::String,
     
     # Validate coarse resolution
     if coarse_res <= 0 || coarse_res >= resolution
-        println("ERROR: coarse_res must be > 0 and < resolution ($resolution)")
+        @warn "coarse_res must be > 0 and < resolution" resolution=resolution coarse_res=coarse_res
         return (false, DGGRIDParams.DGGRIDMetafile(), "")
     end
-    
+
     if isempty(coarse_cells)
-        println("ERROR: coarse_cells cannot be empty")
+        @warn "coarse_cells cannot be empty"
         return (false, DGGRIDParams.DGGRIDMetafile(), "")
     end
     
@@ -521,13 +508,8 @@ function prep_generate_grid_coarse_cells(dggs_type::String,
     # Validate parameters
     is_ok = DGGRIDParams.validate_metafile(params)
     if !is_ok[1]
-        println("ERROR: Invalid DGGRID parameters for GENERATE_GRID (coarse cells):")
-        for err in is_ok[2]
-            println(" - $err")
-        end
+        @warn "Invalid DGGRID parameters for GENERATE_GRID (coarse cells)" errors=is_ok[2]
         return (false, params, "")
-    # else
-    #     println("DGGRID parameters validated successfully for coarse cells grid generation.")
     end
     
     return (true, params, output_path)
@@ -598,16 +580,16 @@ function prep_generate_grid_clip_region(dggs_type::String,
     
     # Validate clip file exists
     if !isfile(clip_file)
-        println("ERROR: Clip file does not exist: $clip_file")
+        @warn "Clip file does not exist" path=clip_file
         return (false, DGGRIDParams.DGGRIDMetafile(), "")
     end
-    
+
     # Create metafile with basic parameters
     params = DGGRIDParams.DGGRIDMetafile()
     DGGRIDParams.add_parameter!(params, "dggrid_operation", "GENERATE_GRID")
     DGGRIDParams.add_parameter!(params, "dggs_type", dggs_type)
     DGGRIDParams.add_parameter!(params, "dggs_res_spec", resolution)
-    
+
     # Set clip type for spatial file
     DGGRIDParams.add_parameter!(params, "clip_subset_type", "GDAL")
     DGGRIDParams.add_parameter!(params, "clip_region_files", clip_file)
@@ -686,15 +668,10 @@ function prep_generate_grid_clip_region(dggs_type::String,
     # Validate parameters
     is_ok = DGGRIDParams.validate_metafile(params)
     if !is_ok[1]
-        println("ERROR: Invalid DGGRID parameters for GENERATE_GRID (clip region):")
-        for err in is_ok[2]
-            println(" - $err")
-        end
+        @warn "Invalid DGGRID parameters for GENERATE_GRID (clip region)" errors=is_ok[2]
         return (false, params, "")
-    # else
-    #     println("DGGRID parameters validated successfully for clipped region grid generation.")
     end
-    
+
     return (true, params, output_path)
 end
 
@@ -764,16 +741,16 @@ function prep_generate_grid_clip_cells( dggs_type::String,
     
     # Validate clip file exists
     if !isfile(clip_file)
-        println("ERROR: Clip file does not exist: $clip_file")
+        @warn "Clip file does not exist" path=clip_file
         return (false, DGGRIDParams.DGGRIDMetafile(), "")
     end
-    
+
     # Create metafile with basic parameters
     params = DGGRIDParams.DGGRIDMetafile()
     DGGRIDParams.add_parameter!(params, "dggrid_operation", "GENERATE_GRID")
     DGGRIDParams.add_parameter!(params, "dggs_type", dggs_type)
     DGGRIDParams.add_parameter!(params, "dggs_res_spec", resolution)
-    
+
     # Set clip type for spatial file
     DGGRIDParams.add_parameter!(params, "clip_subset_type", "INPUT_ADDRESS_TYPE")
     DGGRIDParams.add_parameter!(params, "clip_region_files", clip_file)
@@ -865,15 +842,10 @@ function prep_generate_grid_clip_cells( dggs_type::String,
     # Validate parameters
     is_ok = DGGRIDParams.validate_metafile(params)
     if !is_ok[1]
-        println("ERROR: Invalid DGGRID parameters for GENERATE_GRID (clip region):")
-        for err in is_ok[2]
-            println(" - $err")
-        end
+        @warn "Invalid DGGRID parameters for GENERATE_GRID (clip cells)" errors=is_ok[2]
         return (false, params, "")
-    # else
-    #     println("DGGRID parameters validated successfully for clipped region grid generation.")
     end
-    
+
     return (true, params, output_path)
 end
 
@@ -933,13 +905,8 @@ function grid_gen_convenience!(params::DGGRIDParams.DGGRIDMetafile; longitude_wr
     # Validate parameters
     is_ok = DGGRIDParams.validate_metafile(params)
     if !is_ok[1]
-        println("ERROR: Invalid DGGRID parameters for grid_gen_convenience update!:")
-        for err in is_ok[2]
-            println(" - $err")
-        end
+        @warn "Invalid DGGRID parameters for grid_gen_convenience!" errors=is_ok[2]
         return false
-    # else
-    #     println("DGGRID parameters validated successfully for grid_gen_convenience update!")
     end
     return true
 end
@@ -1087,11 +1054,7 @@ function z3_coarse_and_convenience_test()
 
     validated = grid_gen_convenience!(params)
 
-    # just print out results
-    println("Generated parameters... success: $success, validated: $validated, output_path: $output_path")
-    for (key, value) in params.params
-        println(" - $key : $value")
-    end
+    @debug "Generated parameters" success=success validated=validated output_path=output_path params=params.params
     
 end
 

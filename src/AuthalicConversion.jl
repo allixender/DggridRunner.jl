@@ -187,7 +187,7 @@ end
 Apply point-transform `f` to a single GeoInterface point, wrap the resulting
 longitude into [-180, 180], and return an ArchGDAL point geometry.
 """
-function transform_and_unwrap(f, point, ::GI.AbstractPolygonTrait)
+function transform_and_unwrap(f, point, ::GI.AbstractPointTrait)
     sv = f(SVector(GI.x(point), GI.y(point)))
 
     if sv[1] < -180

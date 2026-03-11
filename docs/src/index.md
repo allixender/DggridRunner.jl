@@ -29,6 +29,49 @@ run_dggrid_simple(params)
 # → output_path now points to a GeoPackage with the grid cells
 ```
 
+## Output and logging
+
+DGGRIDRunner uses Julia's standard `Logging` infrastructure. By default the
+library is **silent** — no output is printed during normal operation.
+
+Validation warnings (missing files, invalid parameters) are emitted at the
+`Warn` level and will show up in the default logger.
+
+To enable verbose output (metafile paths, DGGRID command, raw DGGRID stdout)
+set the `JULIA_DEBUG` environment variable before starting Julia:
+
+```bash
+JULIA_DEBUG=DGGRIDRunner julia --project=@. myscript.jl
+```
+
+or at runtime:
+
+```julia
+ENV["JULIA_DEBUG"] = "DGGRIDRunner"
+```
+
+To suppress all output including warnings, use `NullLogger`:
+
+```julia
+using Logging
+
+with_logger(NullLogger()) do
+    run_dggrid_simple(params)
+end
+```
+
+To redirect output to a file:
+
+```julia
+using Logging
+
+open("dggrid_run.log", "w") do io
+    with_logger(SimpleLogger(io)) do
+        run_dggrid_simple(params)
+    end
+end
+```
+
 ## Inspiration
 
 There is a very similar Python package with a longer history: [dggrid4py](https://github.com/allixender/dggrid4py). That package tries to abstract away the DGGRID parameters in order to give users an easier API. This [DggridRunner](https://github.com/allixender/DggridRunner.jl) Julia package goes down a different road and rather gives an easy access to better use the specific paramters for more fine-grained DGGRID usage.

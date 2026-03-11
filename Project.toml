@@ -1,7 +1,7 @@
 name = "DGGRIDRunner"
 uuid = "97cb0bd6-f491-46d5-a9a7-7840aaf710c3"
 authors = ["Alexander Kmoch <alexander.kmoch@ut.ee> and contributors"]
-version = "0.0.6"
+version = "0.1.1"
 
 [deps]
 ArchGDAL = "c9ce4bd3-c3d5-55b8-8973-c0e20141b8c3"
@@ -10,6 +10,7 @@ DGGRID7_jll = "56fc471b-e449-5679-a438-44d065b4fb79"
 GDAL_jll = "a7073274-a066-55f0-b90d-d619367d196c"
 GeoInterface = "cf35fbd7-0cd7-5166-be24-54bfbe79505f"
 GeometryBasics = "5c1252a2-5f33-56bf-86c9-59e7332b4326"
+Logging = "56ddb016-857b-54e1-b83d-db4d58db5568"
 StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 
