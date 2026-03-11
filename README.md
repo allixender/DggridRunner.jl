@@ -1,8 +1,12 @@
-# DggridRunner
+# DGGRIDRunners
 
 A Julia wrapper library to run highlevel functions of the DGGRID cli tool
 
-[![Build Status](https://github.com/allixender/DggridRunner.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/allixender/DggridRunner.jl/actions/workflows/CI.yml?query=branch%3Amain)
+[![Build Status](https://github.com/allixender/DggridRunners.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/allixender/DggridRunners.jl/actions/workflows/CI.yml?query=branch%3Amain)
+[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://allixender.github.io/DggridRunners.jl/stable/)
+[![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://allixender.github.io/DggridRunners.jl/dev/)
+
+Full documentation is available at [https://allixender.github.io/DggridRunners.jl/stable/](https://allixender.github.io/DggridRunners.jl/stable/).
 
 [DGGRID](https://www.discreteglobalgrids.org/software/) is a free software program for creating and manipulating Discrete Global Grids created and maintained by Kevin Sahr.
 
@@ -14,11 +18,11 @@ A Julia wrapper library to run highlevel functions of the DGGRID cli tool
 
 ## Inspiration
 
-There is a very similar Python package with a longer history: [dggrid4py](https://github.com/allixender/dggrid4py). That package tries to abstract away the DGGRID parameters in order to give users an easier API. This [DggridRunner](https://github.com/allixender/DggridRunner.jl) Julia package goes down a different road and rather gives an easy access to better use the specific paramters for more fine-grained DGGRID usage.
+There is a very similar Python package with a longer history: [dggrid4py](https://github.com/allixender/dggrid4py). That package tries to abstract away the DGGRID parameters in order to give users an easier API. This [DggridRunners](https://github.com/allixender/DggridRunners.jl) Julia package goes down a different road and rather gives an easy access to better use the specific paramters for more fine-grained DGGRID usage.
 
 ## Output and logging
 
-DGGRIDRunner uses Julia's standard `Logging` infrastructure. By default the
+DGGRIDRunners uses Julia's standard `Logging` infrastructure. By default the
 library is **silent** — no output is printed during normal operation.
 
 Validation warnings (missing files, invalid parameters) are emitted at the
@@ -28,13 +32,13 @@ To enable verbose output (metafile paths, DGGRID command, raw DGGRID stdout)
 set the `JULIA_DEBUG` environment variable before starting Julia:
 
 ```bash
-JULIA_DEBUG=DGGRIDRunner julia --project=@. myscript.jl
+JULIA_DEBUG=DGGRIDRunners julia --project=@. myscript.jl
 ```
 
 or at runtime:
 
 ```julia
-ENV["JULIA_DEBUG"] = "DGGRIDRunner"
+ENV["JULIA_DEBUG"] = "DGGRIDRunners"
 ```
 
 To suppress all output including warnings, use `NullLogger`:
@@ -61,7 +65,7 @@ end
 
 ## Notes
 
-Technically, you need the `dggrid` tool compiled available on the system. However, we have a [Julia Yggdrasil BinaryBuilder](https://github.com/JuliaPackaging/Yggdrasil/tree/master/D/DGGRID7) package available, `DGGRID7_jll` that you can install.
+Technically, you need the `dggrid` tool compiled available on the system. However, we have a [Julia Yggdrasil BinaryBuilder](https://github.com/JuliaPackaging/Yggdrasil/tree/master/D/DGGRID7) (which currently provides DGGRID version 8.43)package available, `DGGRID7_jll` that you can install.
 
 If you need that for other purposes, you can use the non-do-block form:
 

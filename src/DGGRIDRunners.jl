@@ -1,4 +1,4 @@
-module DGGRIDRunner
+module DGGRIDRunners
 
 include("DggridParams.jl")
 import .DGGRIDParams
@@ -1058,7 +1058,7 @@ function z3_coarse_and_convenience_test()
     
 end
 
-end # module
+end # module DGGRIDRunners
 
 # ---------------------------------------------
 # if name is main equivalent in Julia

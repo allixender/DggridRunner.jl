@@ -1,8 +1,8 @@
 using Documenter
 using Literate
-using DGGRIDRunner
-import DGGRIDRunner.DGGRIDParams
-import DGGRIDRunner.AuthalicConversion
+using DGGRIDRunners
+import DGGRIDRunners.DGGRIDParams
+import DGGRIDRunners.AuthalicConversion
 
 # ---------------------------------------------------------------------------
 # Generate example pages from Literate.jl source files
@@ -34,9 +34,9 @@ end
 # ---------------------------------------------------------------------------
 
 makedocs(
-    sitename = "DGGRIDRunner.jl",
+    sitename = "DGGRIDRunners.jl",
     authors  = "Alexander Kmoch and contributors",
-    modules  = [DGGRIDRunner, DGGRIDParams, AuthalicConversion],
+    modules  = [DGGRIDRunners, DGGRIDParams, AuthalicConversion],
     format   = Documenter.HTML(
         prettyurls = get(ENV, "CI", nothing) == "true",
     ),
@@ -53,7 +53,7 @@ makedocs(
 )
 
 deploydocs(
-    repo      = "github.com/allixender/DggridRunner.jl.git",
+    repo      = "github.com/allixender/DggridRunners.jl.git",
     devbranch = "main",
     push_preview = false,
 )

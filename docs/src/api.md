@@ -1,6 +1,6 @@
 # API Reference
 
-## DGGRIDRunner
+## DGGRIDRunners
 
 ```@docs
 prep_output_stats

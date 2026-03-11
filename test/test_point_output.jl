@@ -8,7 +8,7 @@ using Test
 
 # Include the module to test
 # include("dggrid_runner_lib.jl")
-using DGGRIDRunner
+using DGGRIDRunners
 
 @testset "Point Output Parameter Tests" begin
     

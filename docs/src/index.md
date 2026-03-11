@@ -1,4 +1,4 @@
-# DGGRIDRunner.jl
+# DGGRIDRunners.jl
 
 A Julia wrapper for the [DGGRID](https://discreteglobalgrids.org/) CLI tool,
 providing high-level functions to create and query Discrete Global Grid Systems (DGGS).
@@ -15,13 +15,13 @@ providing high-level functions to create and query Discrete Global Grid Systems 
 
 ```julia
 using Pkg
-Pkg.add("DGGRIDRunner")
+Pkg.add("DGGRIDRunners")
 ```
 
 ## Quick Start
 
 ```julia
-using DGGRIDRunner
+using DGGRIDRunners
 
 # Generate an ISEA7H grid at resolution 3 (whole earth)
 success, params, output_path = prep_generate_grid_whole_earth("ISEA7H", 3)
@@ -31,7 +31,7 @@ run_dggrid_simple(params)
 
 ## Output and logging
 
-DGGRIDRunner uses Julia's standard `Logging` infrastructure. By default the
+DGGRIDRunners uses Julia's standard `Logging` infrastructure. By default the
 library is **silent** — no output is printed during normal operation.
 
 Validation warnings (missing files, invalid parameters) are emitted at the
@@ -41,13 +41,13 @@ To enable verbose output (metafile paths, DGGRID command, raw DGGRID stdout)
 set the `JULIA_DEBUG` environment variable before starting Julia:
 
 ```bash
-JULIA_DEBUG=DGGRIDRunner julia --project=@. myscript.jl
+JULIA_DEBUG=DGGRIDRunners julia --project=@. myscript.jl
 ```
 
 or at runtime:
 
 ```julia
-ENV["JULIA_DEBUG"] = "DGGRIDRunner"
+ENV["JULIA_DEBUG"] = "DGGRIDRunners"
 ```
 
 To suppress all output including warnings, use `NullLogger`:

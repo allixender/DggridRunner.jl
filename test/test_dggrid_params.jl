@@ -12,7 +12,7 @@ using Test
 
 # Include the module to test
 # include("DggridParams.jl")
-using DGGRIDRunner
+using DGGRIDRunners
 using .DGGRIDParams
 
 @testset "DGGRIDParams Tests" begin

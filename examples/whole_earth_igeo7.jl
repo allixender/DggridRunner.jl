@@ -19,8 +19,8 @@
 # Pkg.add(["GeoDataFrames", "GeoFormatTypes"])
 # ```
 
-using DGGRIDRunner
-import DGGRIDRunner.AuthalicConversion: AuthalicToWGS84, transform_and_unwrap
+using DGGRIDRunners
+import DGGRIDRunners.AuthalicConversion: AuthalicToWGS84, transform_and_unwrap
 import GeoDataFrames as GDF
 import GeoFormatTypes
 using Base.Threads

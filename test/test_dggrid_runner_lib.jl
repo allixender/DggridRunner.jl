@@ -11,9 +11,9 @@ using Test
 
 # Include the module to test
 # include("DggridRunner.jl")
-using DGGRIDRunner
+using DGGRIDRunners
 
-@testset "DGGRIDRunner Tests" begin
+@testset "DGGRIDRunners Tests" begin
     
     # ========================================================================
     # Test Basic functions
