@@ -77,6 +77,9 @@ end
 # For DGGS cells (simple polygons, 6-7 vertices, exterior ring only) this is
 # the tightest loop we can write without dropping into raw GDAL C calls.
 
+# thin router — single entry point for callers
+transform_and_unwrap(f, geom) = transform_and_unwrap(f, geom, GI.geomtrait(geom))
+
 """
     transform_and_unwrap(f, poly) -> ArchGDAL.IGeometry{wkbPolygon}
 
@@ -88,7 +91,7 @@ return a new ArchGDAL polygon.
 
 Only the exterior ring is processed (DGGS cells have no holes).
 """
-function transform_and_unwrap(f, poly)
+function transform_and_unwrap(f, poly, ::GI.AbstractPolygonTrait)
     ring = GI.getexterior(poly)
     n = GI.npoint(ring)
 
@@ -124,13 +127,67 @@ function transform_and_unwrap(f, poly)
 end
 
 
+
+function transform_and_unwrap(f, multipoly, ::GI.MultiPolygonTrait)
+    # Helper: transform + unwrap one ring (exterior or hole) into an ArchGDAL linear ring.
+    # prev_lon is seeded fresh per ring so each closed loop is unwrapped independently.
+    function process_ring(ring)
+        n  = GI.npoint(ring)
+        lr = ArchGDAL.createlinearring()
+
+        p1      = GI.getpoint(ring, 1)
+        sv      = f((GI.x(p1), GI.y(p1)))
+        prev_lon = sv[1]
+        ArchGDAL.addpoint!(lr, prev_lon, sv[2])
+
+        @inbounds for i in 2:n
+            pi       = GI.getpoint(ring, i)
+            sv       = f((GI.x(pi), GI.y(pi)))
+            lon_curr = sv[1]
+            lat_curr = sv[2]
+
+            diff = lon_curr - prev_lon
+            if diff > 180
+                lon_curr -= 360
+            elseif diff < -180
+                lon_curr += 360
+            end
+
+            prev_lon = lon_curr
+            ArchGDAL.addpoint!(lr, lon_curr, lat_curr)
+        end
+
+        return lr
+    end
+
+    result = ArchGDAL.createmultipolygon()
+
+    for i in 1:GI.ngeom(multipoly)
+        part = GI.getgeom(multipoly, i)
+        poly = ArchGDAL.createpolygon()
+
+        # Exterior ring
+        ArchGDAL.addgeom!(poly, process_ring(GI.getexterior(part)))
+
+        # Interior rings (holes) — iterated independently, each with its own prev_lon seed
+        for j in 1:GI.nhole(part)
+            ArchGDAL.addgeom!(poly, process_ring(GI.gethole(part, j)))
+        end
+
+        ArchGDAL.addgeom!(result, poly)
+    end
+
+    return result
+end
+
+
 """
-    transform_and_unwrap_point(f, point) -> ArchGDAL.IGeometry{wkbPoint}
+    transform_and_unwrap(f, point) -> ArchGDAL.IGeometry{wkbPoint}
 
 Apply point-transform `f` to a single GeoInterface point, wrap the resulting
 longitude into [-180, 180], and return an ArchGDAL point geometry.
 """
-function transform_and_unwrap_point(f, point)
+function transform_and_unwrap(f, point, ::GI.AbstractPolygonTrait)
     sv = f(SVector(GI.x(point), GI.y(point)))
 
     if sv[1] < -180
@@ -144,6 +201,7 @@ function transform_and_unwrap_point(f, point)
     
     return geom
 end
+
 
 
 # Keep the standalone unwrap for any non-transform use cases

@@ -19,6 +19,7 @@ export prep_generate_grid_whole_earth
 export prep_generate_grid_coarse_cells
 export prep_generate_grid_clip_region, prep_generate_grid_clip_cells
 export grid_gen_convenience!
+export suggest_clip_params, apply_clip_params!
 
 # z3_coarse_and_convenience_test()
 # dryrun()
@@ -26,6 +27,7 @@ export grid_gen_convenience!
 
 import DGGRID7_jll
 import ArchGDAL
+import GeoInterface
 
 # const libs_paths = DGGRID7_jll.LIBPATH_list
 # const dggrid_exec = DGGRID7_jll.get_dggrid_path()
@@ -940,6 +942,123 @@ function grid_gen_convenience!(params::DGGRIDParams.DGGRIDMetafile; longitude_wr
     #     println("DGGRID parameters validated successfully for grid_gen_convenience update!")
     end
     return true
+end
+
+# ---------------------------------------------
+# Clip parameter heuristics
+# ---------------------------------------------
+
+"""
+    suggest_clip_params(geom) -> NamedTuple
+
+Given any GeoInterface-compatible clip geometry, inspect its spatial extent and
+return a NamedTuple of suggested DGGRID clipping parameters.
+
+The two parameters that matter for small-area, high-resolution grids are:
+
+- `clipper_scale_factor` — Clipper library integer precision. Default is 1_000_000.
+  For regions smaller than ~0.5° on their shortest side (tens of km), the default
+  leaves only ~100–1000 integer steps between adjacent cell vertices; increasing by
+  10× or 100× prevents boundary cells being silently dropped or duplicated.
+
+- `geodetic_densify` — maximum arc length (degrees) for clip polygon edges before
+  they are densified. Only useful when the clip polygon itself has long straight edges
+  (e.g. the original unsplit country boundary). For already-subdivided polygons this
+  is almost always 0.0.
+
+- `clip_using_holes` — set true when the clip polygon has interior rings (lakes,
+  enclaves). Irrelevant for subdivided pieces, which have no holes.
+
+# Thresholds
+
+| Shortest bbox dim | `clipper_scale_factor` | rationale                        |
+|-------------------|------------------------|----------------------------------|
+| < 0.5°  (~30 km)  | 100_000_000  (100×)    | sub-degree, high-res cells       |
+| < 5.0°  (~300 km) |  10_000_000   (10×)    | regional                         |
+| ≥ 5.0°            |   1_000_000    (1×)    | default, continental scale       |
+
+| Longest bbox dim  | `geodetic_densify`     | rationale                        |
+|-------------------|------------------------|----------------------------------|
+| < 5°              | 0.0  (disabled)        | edges short enough as-is         |
+| 5° – 20°          | 0.5                    | country/sea boundary curves      |
+| > 20°             | 0.25                   | continental arcs                 |
+
+# Example
+```julia
+geom   = gdf.geometry[1]  # ArchGDAL or LibGEOS polygon
+hint   = suggest_clip_params(geom)
+
+success, params, path = prep_generate_grid_clip_region(
+    "IGEO7", 9, clip_file;
+    geodetic_densify = hint.geodetic_densify,
+    use_holes        = hint.clip_using_holes,
+)
+apply_clip_params!(params, geom)   # sets clipper_scale_factor
+```
+"""
+function suggest_clip_params(geom)
+    ext  = GeoInterface.extent(geom)
+    Δlon = ext.X[2] - ext.X[1]
+    Δlat = ext.Y[2] - ext.Y[1]
+
+    min_dim = min(Δlon, Δlat)
+    max_dim = max(Δlon, Δlat)
+
+    clipper_scale_factor = if min_dim < 0.5
+        100_000_000   # 100× — sub-degree regions, small/high-res cells
+    elseif min_dim < 5.0
+        10_000_000    # 10×  — regional scale
+    else
+        1_000_000     # 1×   — default, large/continental regions
+    end
+
+    geodetic_densify = if max_dim > 20.0
+        0.25          # continental arcs
+    elseif max_dim > 5.0
+        0.5           # country / sea boundaries
+    else
+        0.0           # subdivided polygons: edges already short
+    end
+
+    trait     = GeoInterface.geomtrait(geom)
+    has_holes = if trait isa GeoInterface.PolygonTrait
+        GeoInterface.nhole(geom) > 0
+    elseif trait isa GeoInterface.MultiPolygonTrait
+        any(GeoInterface.nhole(p) > 0 for p in GeoInterface.getgeom(geom))
+    else
+        false
+    end
+
+    return (
+        clipper_scale_factor = clipper_scale_factor,
+        geodetic_densify     = geodetic_densify,
+        clip_using_holes     = has_holes,
+    )
+end
+
+"""
+    apply_clip_params!(metafile::DGGRIDParams.DGGRIDMetafile, geom) -> DGGRIDMetafile
+
+Call [`suggest_clip_params`](@ref) on `geom` and write the non-default results
+into `metafile` in-place.  Only parameters that differ from DGGRID's built-in
+defaults are written so the metafile stays minimal.
+
+Returns the modified metafile for chaining.
+"""
+function apply_clip_params!(metafile::DGGRIDParams.DGGRIDMetafile, geom)
+    hint = suggest_clip_params(geom)
+
+    if hint.clipper_scale_factor != 1_000_000
+        DGGRIDParams.add_parameter!(metafile, "clipper_scale_factor", hint.clipper_scale_factor)
+    end
+    if hint.geodetic_densify > 0.0
+        DGGRIDParams.add_parameter!(metafile, "geodetic_densify", hint.geodetic_densify)
+    end
+    if hint.clip_using_holes
+        DGGRIDParams.add_parameter!(metafile, "clip_using_holes", true)
+    end
+
+    return metafile
 end
 
 # ---------------------------------------------
